@@ -1,63 +1,50 @@
 'use client';
-import React, { useState } from 'react';
-import DoctorList from '../../components/RendezVous/DoctorList';
+import React from 'react';
 import DoctorSearch from '../../components/RendezVous/DoctorSearch';
-import { Doctor } from '../../components/RendezVous/DoctorCard';
+import DoctorList from '../../components/RendezVous/DoctorList';
 import '../../components/RendezVous/RendezVous.css';
 
-// Données simulées de médecins
-const mockDoctors: Doctor[] = [
+// Données de simulation pour les docteurs
+const simulatedDoctors = [
   {
     id: '1',
-    name: 'Amina Diallo',
-    specialty: 'Cardiologue',
-    address: 'Clinique La Providence, Cocody, Abidjan',
-    avatarUrl: 'https://i.pravatar.cc/150?img=1',
+    name: 'Dr. Marie Dubois',
+    specialty: 'Médecin généraliste',
+    address: '123 Rue de la Santé, 75001 Paris',
+    avatar: 'https://i.pravatar.cc/150?img=1' // Image aléatoire
   },
   {
     id: '2',
-    name: 'Koffi Martin',
-    specialty: 'Pédiatre',
-    address: 'Hôpital Mère-Enfant, Bingerville',
-    avatarUrl: 'https://i.pravatar.cc/150?img=2',
+    name: 'Dr. Jean Martin',
+    specialty: 'Dentiste',
+    address: '45 Avenue des Dents, 75016 Paris',
+    avatar: 'https://i.pravatar.cc/150?img=2'
   },
   {
     id: '3',
-    name: 'Fatou Bamba',
-    specialty: 'Dermatologue',
-    address: 'Centre Médical Le Plateau, Abidjan',
-    avatarUrl: 'https://i.pravatar.cc/150?img=3',
-  },
-  {
-    id: '4',
-    name: 'Yao N\'Guessan',
-    specialty: 'Médecin Généraliste',
-    address: 'Cabinet Médical Les 2 Plateaux, Abidjan',
-    avatarUrl: 'https://i.pravatar.cc/150?img=4',
-  },
+    name: 'Dr. Sophie Leroy',
+    specialty: 'Cardiologue',
+    address: '78 Boulevard du Coeur, 75008 Paris',
+    avatar: 'https://i.pravatar.cc/150?img=3'
+  }
 ];
 
 export default function RendezVousPage() {
-  const [filteredDoctors, setFilteredDoctors] = useState(mockDoctors);
+  const [doctors, setDoctors] = React.useState(simulatedDoctors);
 
-  const handleSearchChange = (query: string) => {
-    const lowerCaseQuery = query.toLowerCase();
-    if (!lowerCaseQuery) {
-      setFilteredDoctors(mockDoctors);
-      return;
-    }
-    const filtered = mockDoctors.filter(doctor => 
-      doctor.name.toLowerCase().includes(lowerCaseQuery) ||
-      doctor.specialty.toLowerCase().includes(lowerCaseQuery)
-    );
-    setFilteredDoctors(filtered);
+  const handleSearch = (filters: any) => {
+    console.log('Filtres de recherche:', filters);
+    // La logique de filtrage sera implémentée ici
   };
 
   return (
-    <div className="rv-container">
-      <h2 className="mb-4">Prendre un rendez-vous</h2>
-      <DoctorSearch onSearchChange={handleSearchChange} />
-      <DoctorList doctors={filteredDoctors} />
+    <div className="rendezvous-container">
+      <header className="rendezvous-header">
+        <h1>Prendre un Rendez-vous</h1>
+        <p>Trouvez le professionnel de santé qui vous convient.</p>
+      </header>
+      <DoctorSearch onSearch={handleSearch} />
+      <DoctorList doctors={doctors} />
     </div>
   );
 }

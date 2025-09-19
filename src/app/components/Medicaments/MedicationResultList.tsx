@@ -1,50 +1,31 @@
 'use client';
 import React from 'react';
-import { Badge } from 'react-bootstrap';
-import './Medicaments.css';
-
-// Types pour les résultats
-export type PharmacyStock = {
-  id: string;
-  name: string;
-  address: string;
-  stock: 'En stock' | 'Stock faible' | 'En rupture';
-};
-
-export type MedicationSearchResult = {
-  medicationName: string;
-  pharmacies: PharmacyStock[];
-};
+import { Card, Button } from 'react-bootstrap';
 
 interface MedicationResultListProps {
-  result: MedicationSearchResult;
+  results: any[]; // Nous utiliserons 'any' pour le moment
 }
 
-const MedicationResultList: React.FC<MedicationResultListProps> = ({ result }) => {
-  const getStockVariant = (stock: PharmacyStock['stock']) => {
-    switch (stock) {
-      case 'En stock': return 'success';
-      case 'Stock faible': return 'warning';
-      case 'En rupture': return 'danger';
-    }
-  };
+const MedicationResultList: React.FC<MedicationResultListProps> = ({ results }) => {
+  if (results.length === 0) {
+    return (
+      <div className="empty-results">
+        <p>Aucun médicament à afficher. Lancez une recherche pour commencer.</p>
+      </div>
+    );
+  }
 
   return (
-    <div className="result-card">
-      <div className="result-header">
-        <h4>{result.medicationName}</h4>
-      </div>
-      <div>
-        {result.pharmacies.map(pharma => (
-          <div key={pharma.id} className="pharmacy-list-item">
-            <div>
-              <div className="pharmacy-name">{pharma.name}</div>
-              <div className="pharmacy-address">{pharma.address}</div>
-            </div>
-            <Badge bg={getStockVariant(pharma.stock)}>{pharma.stock}</Badge>
-          </div>
-        ))}
-      </div>
+    <div className="results-grid">
+      {results.map((med, index) => (
+        <Card key={index} className="medication-card">
+          <Card.Body>
+            <Card.Title>{med.name}</Card.Title>
+            <Card.Text>{med.description}</Card.Text>
+            <Button variant="outline-primary">Voir les détails</Button>
+          </Card.Body>
+        </Card>
+      ))}
     </div>
   );
 };

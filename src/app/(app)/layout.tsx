@@ -4,8 +4,8 @@ import Navbar from '../components/Navbar/Navbar';
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   return (
     <div>
-      {children}
       <Navbar />
+      {children}
     </div>
   );
 }

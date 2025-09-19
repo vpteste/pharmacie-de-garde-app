@@ -1,19 +1,24 @@
 'use client';
 import React from 'react';
-import Link from 'next/link';
-import DoctorCard, { Doctor } from './DoctorCard';
+import DoctorCard from './DoctorCard';
 
 interface DoctorListProps {
-  doctors: Doctor[];
+  doctors: any[];
 }
 
 const DoctorList: React.FC<DoctorListProps> = ({ doctors }) => {
+  if (doctors.length === 0) {
+    return (
+      <div className="empty-results">
+        <p>Aucun docteur trouvé pour les critères sélectionnés.</p>
+      </div>
+    );
+  }
+
   return (
-    <div>
-      {doctors.map(doctor => (
-        <Link key={doctor.id} href={`/rendez-vous/${doctor.id}`} style={{ textDecoration: 'none' }}>
-            <DoctorCard doctor={doctor} />
-        </Link>
+    <div className="doctor-list">
+      {doctors.map((doctor) => (
+        <DoctorCard key={doctor.id} doctor={doctor} />
       ))}
     </div>
   );

@@ -32,8 +32,8 @@
 }
 
 /* Cacher la barre de navigation sur les grands écrans */
-@media (min-width: 769px) {
+/* @media (min-width: 769px) {
     .navbar-container {
         display: none;
     }
-}
+} */

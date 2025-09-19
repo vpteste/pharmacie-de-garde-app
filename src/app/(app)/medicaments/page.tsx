@@ -1,67 +1,27 @@
 'use client';
-import React, { useState } from 'react';
+import React from 'react';
 import MedicationSearch from '../../components/Medicaments/MedicationSearch';
-import MedicationResultList, { MedicationSearchResult } from '../../components/Medicaments/MedicationResultList';
+import MedicationResultList from '../../components/Medicaments/MedicationResultList';
 import '../../components/Medicaments/Medicaments.css';
 
-// Données simulées de résultat de recherche
-const mockSearchResult: MedicationSearchResult = {
-  medicationName: 'Doliprane 1000mg',
-  pharmacies: [
-    {
-      id: '1',
-      name: 'Pharmacie du Centre',
-      address: 'Cocody, Abidjan',
-      stock: 'En stock',
-    },
-    {
-      id: '2',
-      name: 'Grande Pharmacie d\'Angré',
-      address: 'Angré 8ème Tranche, Abidjan',
-      stock: 'Stock faible',
-    },
-    {
-      id: '3',
-      name: 'Pharmacie du Progrès',
-      address: 'Le Plateau, Abidjan',
-      stock: 'En rupture',
-    },
-     {
-      id: '4',
-      name: 'Pharmacie St. Michel',
-      address: 'Marcory, Abidjan',
-      stock: 'En stock',
-    },
-  ],
-};
-
 export default function MedicamentsPage() {
-  const [searchResult, setSearchResult] = useState<MedicationSearchResult | null>(null);
-  const [searched, setSearched] = useState(false);
+  // Pour l'instant, nous utiliserons des données statiques
+  const [results, setResults] = React.useState([]);
 
   const handleSearch = (query: string) => {
-    console.log(`Searching for: ${query}`);
-    // Pour l'instant, on retourne toujours le même résultat simulé
-    setSearchResult(mockSearchResult);
-    setSearched(true);
+    console.log('Recherche de:', query);
+    // Ici, nous appellerons une API à l'avenir.
+    // Pour le moment, la liste reste vide.
   };
 
   return (
-    <div className="med-container">
-      <h2 className="mb-4">Trouver un médicament</h2>
+    <div className="medicaments-container">
+      <header className="medicaments-header">
+        <h1>Recherche de Médicaments</h1>
+        <p>Trouvez des informations sur des milliers de médicaments.</p>
+      </header>
       <MedicationSearch onSearch={handleSearch} />
-
-      {searched && !searchResult && (
-        <p>Aucun résultat trouvé pour ce médicament.</p>
-      )}
-
-      {searchResult && <MedicationResultList result={searchResult} />}
-
-      {!searched && (
-        <div className="text-center text-muted mt-5">
-            <p>Veuillez entrer le nom d\'un médicament pour commencer la recherche.</p>
-        </div>
-      )}
+      <MedicationResultList results={results} />
     </div>
   );
 }

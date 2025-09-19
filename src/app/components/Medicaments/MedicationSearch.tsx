@@ -1,6 +1,6 @@
 'use client';
 import React, { useState } from 'react';
-import './Medicaments.css';
+import { Form, Button, InputGroup } from 'react-bootstrap';
 
 interface MedicationSearchProps {
   onSearch: (query: string) => void;
@@ -11,22 +11,24 @@ const MedicationSearch: React.FC<MedicationSearchProps> = ({ onSearch }) => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (query.trim()) {
-      onSearch(query.trim());
-    }
+    onSearch(query);
   };
 
   return (
-    <form onSubmit={handleSubmit} className="med-search-form">
-      <input 
-        type="text"
-        value={query}
-        onChange={(e) => setQuery(e.target.value)}
-        placeholder="Entrez le nom d'un médicament..."
-        className="med-search-input"
-      />
-      <button type="submit" className="med-search-button">Rechercher</button>
-    </form>
+    <Form onSubmit={handleSubmit} className="medication-search-form">
+      <InputGroup className="mb-3">
+        <Form.Control
+          type="text"
+          placeholder="Entrez le nom d'un médicament..."
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          aria-label="Nom du médicament"
+        />
+        <Button variant="primary" type="submit">
+          Rechercher
+        </Button>
+      </InputGroup>
+    </Form>
   );
 };
 

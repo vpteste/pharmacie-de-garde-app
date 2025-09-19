@@ -1,117 +1,108 @@
-.rv-container {
+/* Container principal */
+.rendezvous-container {
     padding: 20px;
-    padding-bottom: 85px; /* Espace pour la navbar en bas */
+    max-width: 900px;
+    margin: 0 auto;
 }
 
+/* En-tête */
+.rendezvous-header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.rendezvous-header h1 {
+    font-size: 2.5rem;
+    font-weight: bold;
+}
+
+.rendezvous-header p {
+    font-size: 1.1rem;
+    color: #666;
+}
+
+/* Formulaire de recherche de docteur */
+.doctor-search-form {
+    background-color: #f8f9fa;
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 40px;
+}
+
+.doctor-search-form .btn-primary {
+    background-color: #3fc17a;
+    border-color: #3fc17a;
+}
+
+/* Liste des docteurs */
+.doctor-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* Carte de docteur */
 .doctor-card {
     display: flex;
     align-items: center;
-    background: #fff;
-    border-radius: 12px;
-    padding: 15px;
-    margin-bottom: 15px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    background-color: #fff;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    padding: 20px;
+    transition: box-shadow 0.2s ease-in-out;
 }
 
 .doctor-card:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
 }
 
 .doctor-avatar {
-    width: 70px;
-    height: 70px;
-    border-radius: 50%;
-    object-fit: cover;
-    margin-right: 15px;
-    flex-shrink: 0;
+    margin-right: 20px;
 }
 
 .doctor-info {
     flex-grow: 1;
 }
 
-.doctor-name {
-    font-weight: bold;
-    font-size: 1.1rem;
+.doctor-info h3 {
     margin: 0;
+    font-size: 1.5rem;
 }
 
-.doctor-specialty {
-    color: #3fc17a;
-    font-weight: 500;
-    margin: 2px 0 5px 0;
-}
-
-.doctor-address {
-    font-size: 0.9rem;
+.doctor-info .specialty {
+    font-style: italic;
     color: #6c757d;
+    margin-bottom: 5px;
+}
+
+.doctor-info .address {
+    color: #333;
     margin: 0;
 }
 
-.search-input {
-    width: 100%;
-    padding: 12px 15px;
-    border: 1px solid #ced4da;
-    border-radius: 8px;
-    font-size: 1rem;
-    margin-bottom: 20px;
+.doctor-action {
+    margin-left: 20px;
 }
 
-/* Styles pour la page de détail */
-.detail-header {
-    display: flex;
-    align-items: center;
-    margin-bottom: 25px;
-}
+/* Responsive pour les cartes */
+@media (max-width: 768px) {
+    .doctor-card {
+        flex-direction: column;
+        align-items: flex-start;
+    }
 
-.detail-avatar {
-    width: 100px;
-    height: 100px;
-    border-radius: 50%;
-    object-fit: cover;
-    margin-right: 20px;
-}
+    .doctor-avatar {
+        margin-right: 0;
+        margin-bottom: 15px;
+    }
 
-.detail-title .doctor-name { font-size: 1.8rem; }
-.detail-title .doctor-specialty { font-size: 1.2rem; }
+    .doctor-action {
+        margin-left: 0;
+        margin-top: 15px;
+        width: 100%;
+    }
 
-.calendar-container h4 {
-    margin-top: 30px;
-    margin-bottom: 15px;
-}
-
-.calendar-grid {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    gap: 5px;
-    text-align: center;
-}
-
-.calendar-day, .calendar-header {
-    padding: 10px;
-    border-radius: 8px;
-}
-
-.calendar-header {
-    font-weight: bold;
-    font-size: 0.9rem;
-}
-
-.calendar-day {
-    background-color: #f0f0f0;
-    color: #aaa;
-}
-
-.calendar-day.available {
-    background-color: #e6f7f0;
-    color: #3fc17a;
-    font-weight: bold;
-    cursor: pointer;
-}
-
-.calendar-day.available:hover {
-    background-color: #3fc17a;
-    color: white;
+    .doctor-action .btn {
+        width: 100%;
+    }
 }
