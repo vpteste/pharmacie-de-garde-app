@@ -1,0 +1,40 @@
+.landing-page {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    width: 100vw;
+    background: linear-gradient(135deg, #2a7c52, #3fc17a);
+    color: white;
+    text-align: center;
+    padding: 20px;
+}
+
+.landing-title {
+    font-size: 2.5rem;
+    font-weight: bold;
+    margin-bottom: 1rem;
+}
+
+.landing-subtitle {
+    font-size: 1.2rem;
+    margin-bottom: 3rem;
+    opacity: 0.9;
+}
+
+.landing-button {
+    font-size: 1.5rem;
+    padding: 15px 30px;
+    border-radius: 50px;
+    background-color: white;
+    color: #2a7c52;
+    border: none;
+    font-weight: bold;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+.landing-button:hover {
+    transform: scale(1.05);
+}

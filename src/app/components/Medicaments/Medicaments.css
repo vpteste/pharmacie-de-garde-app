@@ -1,0 +1,68 @@
+.med-container {
+    padding: 20px;
+    padding-bottom: 85px; /* Espace pour la navbar en bas */
+}
+
+.med-search-form {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 30px;
+}
+
+.med-search-input {
+    flex-grow: 1;
+    padding: 12px 15px;
+    border: 1px solid #ced4da;
+    border-radius: 8px;
+    font-size: 1rem;
+}
+
+.med-search-button {
+    padding: 12px 20px;
+    background: #3fc17a;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.result-card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.result-header {
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #eee;
+}
+
+.result-header h4 {
+    margin: 0;
+    font-weight: bold;
+}
+
+.pharmacy-list-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 0;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.pharmacy-list-item:last-child {
+    border-bottom: none;
+}
+
+.pharmacy-name {
+    font-weight: 500;
+}
+
+.pharmacy-address {
+    font-size: 0.9rem;
+    color: #6c757d;
+}

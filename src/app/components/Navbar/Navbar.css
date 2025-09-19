@@ -1,0 +1,39 @@
+.navbar-container {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 65px;
+    background-color: #ffffff;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+}
+
+.nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-decoration: none;
+    color: #8e8e93;
+    font-size: 10px;
+}
+
+.nav-item.active {
+    color: #3fc17a; /* Notre couleur de marque */
+}
+
+.nav-icon {
+    width: 24px;
+    height: 24px;
+    margin-bottom: 4px;
+}
+
+/* Cacher la barre de navigation sur les grands écrans */
+@media (min-width: 769px) {
+    .navbar-container {
+        display: none;
+    }
+}

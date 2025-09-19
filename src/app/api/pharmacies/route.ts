@@ -4,6 +4,8 @@ import { NextResponse, NextRequest } from 'next/server';
 let cachedPharmacies: any[] | null = null;
 let lastFetchTime: Date | null = null;
 
+const CACHE_DURATION_MS = 7 * 24 * 60 * 60 * 1000; // 7 jours en millisecondes
+
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
   const lat = searchParams.get('lat');
@@ -20,14 +22,14 @@ export async function GET(request: NextRequest) {
   }
 
   const now = new Date();
-  const todayNoon = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 12, 0, 0);
 
-  // Vérifier si le cache est valide (mis à jour aujourd'hui après midi)
-  if (cachedPharmacies && lastFetchTime && lastFetchTime > todayNoon) {
-    console.log('Serving pharmacies from cache.');
+  // Vérifier si le cache est valide (moins de 7 jours)
+  if (cachedPharmacies && lastFetchTime && (now.getTime() - lastFetchTime.getTime()) < CACHE_DURATION_MS) {
+    console.log('Serving pharmacies from weekly cache.');
     return NextResponse.json(cachedPharmacies);
   }
 
+  console.log('Fetching new pharmacies from Google Places API...');
   const url = 'https://places.googleapis.com/v1/places:searchNearby';
 
   try {
@@ -56,16 +58,16 @@ export async function GET(request: NextRequest) {
 
     if (!response.ok) {
       console.error('Google Places API error:', data);
-      return new NextResponse(`Google Places API error: ${data.message || response.statusText}`, { status: response.status });
+      return new NextResponse(`Google Places API error: ${data.error?.message || response.statusText}`, { status: response.status });
     }
 
-    const pharmacies = data.places.map((place: any) => ({
+    const pharmacies = data.places?.map((place: any) => ({
       id: place.id,
       name: place.displayName?.text,
       address: place.formattedAddress,
       lat: place.location?.latitude,
       lng: place.location?.longitude,
-    }));
+    })) || [];
 
     // Mettre à jour le cache
     cachedPharmacies = pharmacies;

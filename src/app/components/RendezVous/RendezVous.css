@@ -1,0 +1,117 @@
+.rv-container {
+    padding: 20px;
+    padding-bottom: 85px; /* Espace pour la navbar en bas */
+}
+
+.doctor-card {
+    display: flex;
+    align-items: center;
+    background: #fff;
+    border-radius: 12px;
+    padding: 15px;
+    margin-bottom: 15px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.doctor-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+}
+
+.doctor-avatar {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-right: 15px;
+    flex-shrink: 0;
+}
+
+.doctor-info {
+    flex-grow: 1;
+}
+
+.doctor-name {
+    font-weight: bold;
+    font-size: 1.1rem;
+    margin: 0;
+}
+
+.doctor-specialty {
+    color: #3fc17a;
+    font-weight: 500;
+    margin: 2px 0 5px 0;
+}
+
+.doctor-address {
+    font-size: 0.9rem;
+    color: #6c757d;
+    margin: 0;
+}
+
+.search-input {
+    width: 100%;
+    padding: 12px 15px;
+    border: 1px solid #ced4da;
+    border-radius: 8px;
+    font-size: 1rem;
+    margin-bottom: 20px;
+}
+
+/* Styles pour la page de détail */
+.detail-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 25px;
+}
+
+.detail-avatar {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-right: 20px;
+}
+
+.detail-title .doctor-name { font-size: 1.8rem; }
+.detail-title .doctor-specialty { font-size: 1.2rem; }
+
+.calendar-container h4 {
+    margin-top: 30px;
+    margin-bottom: 15px;
+}
+
+.calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 5px;
+    text-align: center;
+}
+
+.calendar-day, .calendar-header {
+    padding: 10px;
+    border-radius: 8px;
+}
+
+.calendar-header {
+    font-weight: bold;
+    font-size: 0.9rem;
+}
+
+.calendar-day {
+    background-color: #f0f0f0;
+    color: #aaa;
+}
+
+.calendar-day.available {
+    background-color: #e6f7f0;
+    color: #3fc17a;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.calendar-day.available:hover {
+    background-color: #3fc17a;
+    color: white;
+}

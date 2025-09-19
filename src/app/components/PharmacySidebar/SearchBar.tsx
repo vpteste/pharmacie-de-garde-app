@@ -1,5 +1,5 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useRef } from 'react';
 import { Form } from 'react-bootstrap';
 import { Autocomplete } from '@react-google-maps/api';
 
@@ -8,18 +8,22 @@ interface SearchBarProps {
 }
 
 const SearchBar: React.FC<SearchBarProps> = ({ onPlaceSelected }) => {
-  const [autocomplete, setAutocomplete] = useState<google.maps.places.Autocomplete | null>(null);
+  const autocompleteRef = useRef<google.maps.places.Autocomplete | null>(null);
 
   const onLoad = (ac: google.maps.places.Autocomplete) => {
-    setAutocomplete(ac);
+    autocompleteRef.current = ac;
   };
 
   const onPlaceChanged = () => {
-    if (autocomplete !== null) {
-      const place = autocomplete.getPlace();
-      onPlaceSelected(place);
+    if (autocompleteRef.current) {
+      const place = autocompleteRef.current.getPlace();
+      if (place && place.geometry) {
+        onPlaceSelected(place);
+      } else {
+        console.log("User pressed Enter without selecting a valid place.");
+      }
     } else {
-      console.error('Autocomplete is not loaded yet!');
+      console.error('Autocomplete instance is not available');
     }
   };
 
@@ -27,7 +31,10 @@ const SearchBar: React.FC<SearchBarProps> = ({ onPlaceSelected }) => {
     <Autocomplete
       onLoad={onLoad}
       onPlaceChanged={onPlaceChanged}
-      // On peut restreindre la recherche à un pays si besoin, ex: options={{ componentRestrictions: { country: "ci" } }}
+      fields={['place_id', 'geometry', 'name', 'formatted_address']}
+      options={{
+        componentRestrictions: { country: 'ci' }, // Restriction à la Côte d'Ivoire
+      }}
     >
       <Form.Control
         type="text"
