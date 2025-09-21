@@ -8,12 +8,6 @@ interface MedicationCardProps {
   med: Medication;
 }
 
-const PillIcon = () => (
-    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-capsule me-2" viewBox="0 0 16 16">
-        <path d="M1.828 8.9-3.536 3.536a1 1 0 0 1 0-1.414l1.414-1.414a1 1 0 0 1 1.414 0L8.9 8.172a1 1 0 0 1 0 1.414l-1.414 1.414a1 1 0 0 1-1.414 0L1.828 8.9Zm9.428-5.364a1 1 0 0 1 0 1.414l-1.414 1.414a1 1 0 0 1-1.414 0L3.536 1.828a1 1 0 0 1 1.414 0l5.364 5.364Z"/>
-    </svg>
-);
-
 const MedicationCard: React.FC<MedicationCardProps> = ({ med }) => {
   return (
     <Card className="medication-card h-100">

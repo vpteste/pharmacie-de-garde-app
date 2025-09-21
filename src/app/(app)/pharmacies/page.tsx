@@ -1,8 +1,6 @@
-'use client';
 import { GoogleMap, Marker, InfoWindow, DirectionsRenderer, DirectionsService } from '@react-google-maps/api';
 import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
-import { Button, Spinner, Form, Alert } from 'react-bootstrap';
-import { useGoogleMaps } from '../../components/MapProvider/MapProvider';
+import { Button, Spinner, Alert } from 'react-bootstrap';
 import PharmacySidebar from '../../components/PharmacySidebar/PharmacySidebar';
 import SearchOverlay from '../../components/PharmacySidebar/SearchOverlay';
 import DirectionsList from '../../components/PharmacySidebar/DirectionsList';
@@ -229,7 +227,6 @@ export default function PharmaciesPage() {
   const onLoad = useCallback((mapInstance: google.maps.Map) => setMap(mapInstance), []);
 
   const pharmacyMarkerIcon = { url: '/pharmacy-cross.svg', scaledSize: new window.google.maps.Size(30, 30), };
-  const onDutyPharmacyMarkerIcon = { url: '/pharmacy-cross.svg', scaledSize: new window.google.maps.Size(45, 45), }; // Make it bigger and maybe green
   const selectedPharmacyMarkerIcon = { url: '/pharmacy-cross.svg', scaledSize: new window.google.maps.Size(50, 50) };
   const userLocationIcon = { path: google.maps.SymbolPath.CIRCLE, scale: 7, fillColor: "#4285F4", fillOpacity: 1, strokeWeight: 2, strokeColor: "white" };
 

@@ -30,12 +30,12 @@ export default function ComptePage() {
 
             <Card className="mt-4">
                 <Card.Header>
-                    <Card.Title as="h5">Informations de l'Établissement</Card.Title>
+                    <Card.Title as="h5">Informations de l&apos;Établissement</Card.Title>
                 </Card.Header>
                 <Card.Body>
                     <Form>
                          <Form.Group className="mb-3">
-                            <Form.Label>Nom de l'établissement</Form.Label>
+                            <Form.Label>Nom de l&apos;établissement</Form.Label>
                             <Form.Control type="text" defaultValue="Pharmacie du Centre" />
                         </Form.Group>
                         <Form.Group className="mb-3">

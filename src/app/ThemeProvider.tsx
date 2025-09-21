@@ -21,12 +21,12 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     document.documentElement.setAttribute('data-bs-theme', storedTheme);
   }, []);
 
-  const toggleTheme = () => {
+  const toggleTheme = useCallback(() => {
     const newTheme = theme === 'light' ? 'dark' : 'light';
     setTheme(newTheme);
     localStorage.setItem('theme', newTheme);
     document.documentElement.setAttribute('data-bs-theme', newTheme);
-  };
+  }, [theme]);
 
   const value = useMemo(() => ({ theme, toggleTheme }), [theme, toggleTheme]);
 

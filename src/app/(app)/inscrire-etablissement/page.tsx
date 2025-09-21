@@ -304,13 +304,19 @@ export default function InscrireEtablissementPage() {
                   {step < 4 && <Button variant="primary" onClick={nextStep}>Suivant</Button>}
                   {step === 4 && 
                     <Button variant="success" type="submit" disabled={isLoading}>
-                      {isLoading ? <><Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" /> En cours...</> : "Terminer l'inscription"}
+                      {isLoading ? <><Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" /> En cours...</> : "Terminer l&apos;inscription"}
                     </Button>
                   }
                 </Card.Footer>
               </Form>
             </Card>
           </Col>
+        </Row>
+      </Container>
+    </div>
+  );
+}
+>
         </Row>
       </Container>
     </div>

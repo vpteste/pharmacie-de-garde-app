@@ -2,19 +2,17 @@
 import { useState, useEffect } from 'react';
 import { DayPicker } from 'react-day-picker';
 import { fr } from 'date-fns/locale';
-import { doc, getDoc, setDoc, collection, getDocs } from 'firebase/firestore';
-import { db, auth } from '../../../../firebase';
+import { useState, useEffect } from 'react';
+import { DayPicker } from 'react-day-picker';
+import { fr } from 'date-fns/locale';
+import { doc, setDoc, collection, getDocs } from 'firebase/firestore';
+import { db } from '../../../../firebase';
 import { useAuth } from '../../AuthContext';
 import { Button, Spinner, Alert, Popover, OverlayTrigger } from 'react-bootstrap';
 import 'react-day-picker/dist/style.css';
 import './gardes.css';
 
 type GardeStatus = 'jour' | 'nuit' | 'jour_nuit' | 'aucune';
-
-interface Garde {
-    date: string; // YYYY-MM-DD
-    status: GardeStatus;
-}
 
 export default function GardesPage() {
     const { user } = useAuth();
@@ -79,7 +77,7 @@ export default function GardesPage() {
         jour_nuit: 'garde-jour-nuit',
     };
 
-    const DayContentWithPopover = (props: any) => {
+    const DayContentWithPopover = (props: { date: Date; children: React.ReactNode }) => {
         const date = props.date;
         const popover = (
             <Popover id={`popover-${date.toISOString()}`}>

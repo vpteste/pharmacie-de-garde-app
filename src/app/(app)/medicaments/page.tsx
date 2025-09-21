@@ -96,7 +96,7 @@ export default function MedicamentsPage() {
     if (results.length === 0) {
       return (
         <div className="empty-results">
-          <p>Aucun médicament ne correspond à votre recherche. Veuillez vérifier l'orthographe.</p>
+          <p>Aucun médicament ne correspond à votre recherche. Veuillez vérifier l&apos;orthographe.</p>
         </div>
       );
     }

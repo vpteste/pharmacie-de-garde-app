@@ -1,6 +1,7 @@
 'use client';
 import React from 'react';
 import { useParams } from 'next/navigation';
+import Image from 'next/image';
 import '../../../components/RendezVous/RendezVous.css';
 
 // On doit recréer les données ici pour que la page dynamique puisse les trouver

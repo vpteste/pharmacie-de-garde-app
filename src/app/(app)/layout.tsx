@@ -8,7 +8,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   const { isLoaded, loadError } = useGoogleMaps();
 
   if (loadError) {
-    return <div>Erreur de chargement de l'API Google Maps. Vérifiez votre connexion ou la configuration de votre clé API.</div>;
+    return <div>Erreur de chargement de l&apos;API Google Maps. Vérifiez votre connexion ou la configuration de votre clé API.</div>;
   }
 
   if (!isLoaded) {
