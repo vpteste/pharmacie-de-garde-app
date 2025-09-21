@@ -17,11 +17,13 @@ export const useGoogleMaps = () => {
   return context;
 };
 
+const libraries: ("places")[] = ['places'];
+
 export const MapProvider = ({ children }: { children: React.ReactNode }) => {
   const { isLoaded, loadError } = useJsApiLoader({
     id: 'google-map-script-main',
     googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || "",
-    libraries: ['places'],
+    libraries,
   });
 
   return (

@@ -1,39 +1,114 @@
+/*
+  Navbar.css
+  Design System: "Pharma-Chic"
+  Author: Gemini Pro
+  Date: 20/09/2025
+*/
+
+/* Conteneur principal de la barre de navigation */
 .navbar-container {
+    /* Positionnement et Box Model */
     position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    height: 65px;
-    background-color: #ffffff;
+    bottom: 15px; /* On la décolle un peu du bord pour l'effet flottant */
+    left: 50%;
+    transform: translateX(-50%); /* Centrage horizontal parfait */
+    width: 95%;
+    max-width: 400px; /* Une largeur max pour les grands écrans mobiles */
+    height: 70px;
     display: flex;
     justify-content: space-around;
     align-items: center;
-    box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
+    padding: 0 10px;
+
+    /* Style et Thème */
+    background-color: rgba(255, 255, 255, 0.9); /* Fond blanc légèrement transparent */
+    backdrop-filter: blur(10px); /* Effet de verre dépoli (pour les navigateurs compatibles) */
+    -webkit-backdrop-filter: blur(10px);
+    border-radius: 35px; /* Bords très arrondis pour l'effet pilule */
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    box-shadow: 0 8px 32px rgba(44, 62, 80, 0.2); /* Ombre plus prononcée et diffuse */
     z-index: 1000;
 }
 
+/* Chaque item de navigation */
 .nav-item {
     display: flex;
     flex-direction: column;
     align-items: center;
+    justify-content: center;
     text-decoration: none;
-    color: #8e8e93;
-    font-size: 10px;
+    font-size: 11px;
+    font-weight: 500;
+    color: #8e8e93; /* Gris neutre pour les inactifs */
+    position: relative; /* Nécessaire pour le pseudo-élément de la pilule */
+    z-index: 1;
+    padding: 8px 12px;
+    border-radius: 20px;
+    transition: color 0.4s ease, transform 0.3s ease;
 }
 
+.nav-item:hover {
+    color: #2c3e50; /* Un peu plus foncé au survol */
+}
+
+/* L'état ACTIF - Le cœur du design */
 .nav-item.active {
-    color: #3fc17a; /* Notre couleur de marque */
+    color: #3fc17a; /* Le vert signature pour le texte et l'icône */
+    font-weight: 600;
+    transform: translateY(-2px); /* Léger soulèvement de l'item actif */
 }
 
+/* La "pilule" de fond pour l'item actif */
+.nav-item.active::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #e6f7ec; /* Vert très pâle */
+    border-radius: 20px; /* Bords arrondis correspondants */
+    z-index: -1;
+    transform: scale(1.1); /* Un peu plus grand que l'item */
+    opacity: 1;
+    transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94), opacity 0.4s ease;
+}
+
+/* Icône SVG */
 .nav-icon {
-    width: 24px;
-    height: 24px;
-    margin-bottom: 4px;
+    width: 26px;
+    height: 26px;
+    margin-bottom: 5px;
+    transition: stroke 0.4s ease;
 }
 
-/* Cacher la barre de navigation sur les grands écrans */
-/* @media (min-width: 769px) {
+/* Sur les écrans de bureau, on transforme la barre en une navigation latérale discrète */
+@media (min-width: 769px) {
     .navbar-container {
-        display: none;
+        position: fixed;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 80px; /* Barre latérale fine */
+        height: 100%;
+        max-width: none;
+        flex-direction: column; /* Passage en colonne */
+        justify-content: center;
+        align-items: center;
+        border-radius: 0; /* Plus de bords arrondis */
+        transform: translateX(0); /* On annule le centrage */
+        padding: 20px 0;
+        gap: 20px; /* Espace entre les icônes */
+        box-shadow: 2px 0 15px rgba(0, 0, 0, 0.08);
+        background-color: #ffffff;
+        backdrop-filter: none;
     }
-} */
+
+    .nav-item {
+        font-size: 12px;
+    }
+
+    .nav-item.active::before {
+        border-radius: 15px;
+    }
+}

@@ -1,0 +1,35 @@
+.login-page {
+    background-color: #f8f9fa;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    padding: 40px 0;
+}
+
+.login-card {
+    border: none;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+    border-radius: 15px;
+}
+
+.login-card .card-body {
+    padding: 2.5rem;
+}
+
+.login-title {
+    font-weight: 700;
+    color: #333;
+}
+
+.login-card .btn-primary {
+    background-color: #3fc17a;
+    border-color: #3fc17a;
+    padding: 0.75rem;
+    font-weight: 600;
+}
+
+.login-card .card-footer {
+    background-color: #fff;
+    border-top: 1px solid #e9ecef;
+    padding: 1rem;
+}

@@ -31,9 +31,27 @@ Ce document liste les améliorations et nouvelles fonctionnalités potentielles 
 - **Description :** Remplacer les indicateurs de chargement textuels par des animations de "squelettes" (formes grisées qui imitent le contenu final).
 - **Objectif :** Améliorer la perception de vitesse et moderniser l'interface.
 
-## Axe 3 : Fonctionnalités Premium
+## Axe 3 : Espace Professionnel (Backend & Dashboard)
 
-### 3.1. Intégration de l'API Aerial View
+L'interface d'inscription est créée. Pour la rendre fonctionnelle, les étapes suivantes sont nécessaires :
+
+1.  **Intégration Firebase :**
+    *   Utiliser **Firebase Authentication** pour créer un compte utilisateur sécurisé lors de la soumission du formulaire d'inscription.
+    *   Utiliser **Cloud Firestore** pour sauvegarder les détails de l'établissement (infos, horaires, services) et les lier au compte utilisateur correspondant.
+
+2.  **File de Modération (Admin) :**
+    *   Mettre en place un système où les nouvelles inscriptions sont en attente d'approbation par un administrateur avant d'être visibles publiquement. Cela garantit la fiabilité des données.
+
+3.  **Développement du Tableau de Bord Pro :**
+    *   Créer une nouvelle section (protégée par connexion) où les pharmaciens peuvent se connecter.
+    *   Fonctionnalités du tableau de bord :
+        *   Mise à jour des informations de leur établissement.
+        *   Gestion et déclaration des périodes de garde.
+        *   Consultation de statistiques de base.
+
+## Axe 4 : Fonctionnalités Premium
+
+### 4.1. Intégration de l'API Aerial View
 - **Description :** Ajouter un bouton "Vue Aérienne" qui affiche une vidéo cinématique 3D de la pharmacie et de ses environs.
 - **Objectifs :**
     - Offrir une expérience "wow" et différenciante.

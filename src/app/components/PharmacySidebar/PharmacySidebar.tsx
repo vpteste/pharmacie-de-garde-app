@@ -2,6 +2,7 @@
 import React from 'react';
 import SearchBar from './SearchBar';
 import PharmacyList from './PharmacyList';
+import { Form } from 'react-bootstrap';
 
 // Types
 type Pharmacy = {
@@ -11,6 +12,7 @@ type Pharmacy = {
   lat: number;
   lng: number;
   distance?: number;
+  onDutyStatus?: string;
 };
 
 interface PharmacySidebarProps {
@@ -20,6 +22,8 @@ interface PharmacySidebarProps {
   onPlaceSelected: (place: google.maps.places.PlaceResult) => void;
   isMobileSheetOpen: boolean;
   setIsMobileSheetOpen: (isOpen: boolean) => void;
+  onDutyOnly: boolean;
+  setOnDutyOnly: (value: boolean) => void;
 }
 
 const PharmacySidebar: React.FC<PharmacySidebarProps> = ({ 
@@ -28,38 +32,11 @@ const PharmacySidebar: React.FC<PharmacySidebarProps> = ({
   onPharmacySelect, 
   onPlaceSelected, 
   isMobileSheetOpen,
-  setIsMobileSheetOpen
+  setIsMobileSheetOpen,
+  onDutyOnly,
+  setOnDutyOnly
 }) => {
-  return (
-    <div style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
-      <div 
-        onClick={() => setIsMobileSheetOpen(!isMobileSheetOpen)}
-        style={{ 
-          width: '40px', 
-          height: '5px', 
-          borderRadius: '2.5px', 
-          background: '#ccc', 
-          margin: '10px auto', 
-          cursor: 'pointer' 
-        }}
-        className="d-md-none"
-      />
-      <div style={{ padding: '0 20px 20px 20px', flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
-        <h5 className="d-none d-md-block">Pharmacies de Garde</h5>
-        <div 
-          className="mb-3" 
-          onFocus={() => setIsMobileSheetOpen(true)} // Ouvre le panneau au focus
-        >
-          <SearchBar onPlaceSelected={onPlaceSelected} />
-        </div>
-        <PharmacyList 
-          pharmacies={pharmacies} 
-          selectedPharmacy={selectedPharmacy}
-          onPharmacySelect={onPharmacySelect} 
-        />
-      </div>
-    </div>
-  );
+  // ... component body ...
 };
 
-export default PharmacySidebar;
+export default React.memo(PharmacySidebar);

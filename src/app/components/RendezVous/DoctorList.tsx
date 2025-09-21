@@ -2,8 +2,10 @@
 import React from 'react';
 import DoctorCard from './DoctorCard';
 
+import { Doctor } from '../../(app)/rendez-vous/types';
+
 interface DoctorListProps {
-  doctors: any[];
+  doctors: Doctor[];
 }
 
 const DoctorList: React.FC<DoctorListProps> = ({ doctors }) => {

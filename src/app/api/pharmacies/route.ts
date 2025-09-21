@@ -1,10 +1,14 @@
 import { NextResponse, NextRequest } from 'next/server';
+import { adminDb } from '@/lib/firebase-admin';
 
-// Variables globales pour le cache
-let cachedPharmacies: any[] | null = null;
-let lastFetchTime: Date | null = null;
-
-const CACHE_DURATION_MS = 7 * 24 * 60 * 60 * 1000; // 7 jours en millisecondes
+// Helper to get today's date in YYYY-MM-DD format
+const getTodayDateString = () => {
+    const today = new Date();
+    const year = today.getUTCFullYear();
+    const month = (today.getUTCMonth() + 1).toString().padStart(2, '0');
+    const day = today.getUTCDate().toString().padStart(2, '0');
+    return `${year}-${month}-${day}`;
+}
 
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
@@ -15,25 +19,33 @@ export async function GET(request: NextRequest) {
     return new NextResponse('Missing latitude or longitude', { status: 400 });
   }
 
-  const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
+  const apiKey = process.env.GOOGLE_MAPS_API_KEY;
   if (!apiKey) {
-    console.error('Google Maps API key is missing.');
     return new NextResponse('Internal Server Error: API key missing', { status: 500 });
   }
 
-  const now = new Date();
-
-  // Vérifier si le cache est valide (moins de 7 jours)
-  if (cachedPharmacies && lastFetchTime && (now.getTime() - lastFetchTime.getTime()) < CACHE_DURATION_MS) {
-    console.log('Serving pharmacies from weekly cache.');
-    return NextResponse.json(cachedPharmacies);
-  }
-
-  console.log('Fetching new pharmacies from Google Places API...');
-  const url = 'https://places.googleapis.com/v1/places:searchNearby';
-
   try {
-    const response = await fetch(url, {
+    // 1. Get all registered pharmacies from our DB
+    const onDutyPharmacies = new Map<string, string>();
+    const todayString = getTodayDateString();
+
+    const pharmaciesSnapshot = await adminDb.collection('pharmacies').get();
+
+    for (const pharmacyDoc of pharmaciesSnapshot.docs) {
+        const scheduleDocRef = adminDb.collection('pharmacies').doc(pharmacyDoc.id).collection('schedules').doc(todayString);
+        const scheduleDoc = await scheduleDocRef.get();
+
+        if (scheduleDoc.exists) {
+            const status = scheduleDoc.data()?.status;
+            if (status && status !== 'aucune') {
+                onDutyPharmacies.set(pharmacyDoc.id, status);
+            }
+        }
+    }
+
+    // 2. Fetch nearby pharmacies from Google Places API
+    const url = 'https://places.googleapis.com/v1/places:searchNearby';
+    const googleResponse = await fetch(url, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -54,29 +66,36 @@ export async function GET(request: NextRequest) {
       }),
     });
 
-    const data = await response.json();
+    const googleData = await googleResponse.json();
 
-    if (!response.ok) {
-      console.error('Google Places API error:', data);
-      return new NextResponse(`Google Places API error: ${data.error?.message || response.statusText}`, { status: response.status });
+    if (!googleResponse.ok) {
+      console.error('Google Places API error:', googleData);
+      return new NextResponse(
+        JSON.stringify({
+          message: "Erreur lors de l'appel à l'API Google Places.",
+          googleError: googleData,
+        }),
+        { status: 500, headers: { 'Content-Type': 'application/json' } }
+      );
     }
 
-    const pharmacies = data.places?.map((place: any) => ({
-      id: place.id,
-      name: place.displayName?.text,
-      address: place.formattedAddress,
-      lat: place.location?.latitude,
-      lng: place.location?.longitude,
-    })) || [];
-
-    // Mettre à jour le cache
-    cachedPharmacies = pharmacies;
-    lastFetchTime = now;
+    // 3. Merge Google data with our on-duty data
+    const pharmacies = googleData.places?.map((place: { id: string; displayName?: { text: string; }; formattedAddress: string; location?: { latitude: number; longitude: number; }; }) => {
+        const onDutyStatus = onDutyPharmacies.get(place.id);
+        return {
+            id: place.id,
+            name: place.displayName?.text,
+            address: place.formattedAddress,
+            lat: place.location?.latitude,
+            lng: place.location?.longitude,
+            onDutyStatus: onDutyStatus || 'aucune', // Add our custom status
+        }
+    }) || [];
 
     return NextResponse.json(pharmacies);
 
   } catch (error) {
-    console.error('An error occurred during the Google Places API request:', error);
+    console.error('An error occurred in /api/pharmacies:', error);
     return new NextResponse('Internal Server Error', { status: 500 });
   }
 }

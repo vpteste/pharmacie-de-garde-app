@@ -21,7 +21,7 @@ const Calendar = () => {
         <div className="calendar-container">
             <h4>Disponibilités en Octobre</h4>
             <div className="calendar-grid">
-                {days.map(day => <div key={day} className="calendar-header">{day}</div>)}
+                {days.map((day, index) => <div key={index} className="calendar-header">{day}</div>)}
                 {dates.map(date => (
                     <div key={date} className={`calendar-day ${availableSlots.includes(date) ? 'available' : ''}`}>
                         {date}
@@ -44,7 +44,7 @@ export default function DoctorDetailPage() {
   return (
     <div className="rv-container">
       <div className="detail-header">
-        <img src={doctor.avatarUrl} alt={`Dr. ${doctor.name}`} className="detail-avatar" />
+        <Image src={doctor.avatarUrl} alt={`Dr. ${doctor.name}`} className="detail-avatar" width={100} height={100} />
         <div className="detail-title">
           <h2 className="doctor-name">Dr. {doctor.name}</h2>
           <p className="doctor-specialty">{doctor.specialty}</p>
@@ -62,4 +62,6 @@ export default function DoctorDetailPage() {
       </button>
     </div>
   );
+}
+);
 }

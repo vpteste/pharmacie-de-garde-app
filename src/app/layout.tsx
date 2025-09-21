@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { MapProvider } from "./components/MapProvider/MapProvider";
+import { Providers } from "./providers"; // <-- Changement ici
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -15,10 +15,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="fr">
-      <body>
-        <MapProvider>
+      <body className="main-content">
+        <Providers>
           {children}
-        </MapProvider>
+        </Providers>
       </body>
     </html>
   );

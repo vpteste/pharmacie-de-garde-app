@@ -5,9 +5,10 @@ import { Autocomplete } from '@react-google-maps/api';
 
 interface SearchBarProps {
   onPlaceSelected: (place: google.maps.places.PlaceResult) => void;
+  autoFocus?: boolean;
 }
 
-const SearchBar: React.FC<SearchBarProps> = ({ onPlaceSelected }) => {
+const SearchBar: React.FC<SearchBarProps> = ({ onPlaceSelected, autoFocus = false }) => {
   const autocompleteRef = useRef<google.maps.places.Autocomplete | null>(null);
 
   const onLoad = (ac: google.maps.places.Autocomplete) => {
@@ -39,6 +40,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ onPlaceSelected }) => {
       <Form.Control
         type="text"
         placeholder="Rechercher une ville, une adresse..."
+        autoFocus={autoFocus}
       />
     </Autocomplete>
   );
