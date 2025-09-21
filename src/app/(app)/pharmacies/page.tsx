@@ -1,3 +1,4 @@
+'use client';
 import { GoogleMap, Marker, InfoWindow, DirectionsRenderer, DirectionsService } from '@react-google-maps/api';
 import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { Button, Spinner, Alert } from 'react-bootstrap';

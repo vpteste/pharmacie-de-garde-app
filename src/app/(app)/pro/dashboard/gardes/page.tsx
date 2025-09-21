@@ -2,9 +2,6 @@
 import { useState, useEffect } from 'react';
 import { DayPicker } from 'react-day-picker';
 import { fr } from 'date-fns/locale';
-import { useState, useEffect } from 'react';
-import { DayPicker } from 'react-day-picker';
-import { fr } from 'date-fns/locale';
 import { doc, setDoc, collection, getDocs } from 'firebase/firestore';
 import { db } from '../../../../firebase';
 import { useAuth } from '../../AuthContext';

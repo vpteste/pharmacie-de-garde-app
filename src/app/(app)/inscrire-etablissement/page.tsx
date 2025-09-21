@@ -316,9 +316,3 @@ export default function InscrireEtablissementPage() {
     </div>
   );
 }
->
-        </Row>
-      </Container>
-    </div>
-  );
-}
