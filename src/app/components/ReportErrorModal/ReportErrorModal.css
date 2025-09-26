@@ -1,0 +1,6 @@
+/* Add any specific styles for the ReportErrorModal here */
+/* For example, you might want to style the success/error alerts */
+
+.modal-body .alert {
+    margin-bottom: 0; /* Remove margin if it's the only thing in the body */
+}

@@ -1,0 +1,54 @@
+.medicaments-container {
+    padding: 2rem;
+}
+
+.search-header {
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
+.search-header h1 {
+    font-weight: 700;
+}
+
+.search-bar {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.results-container {
+    margin-top: 3rem;
+}
+
+.medication-card {
+    border: none;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.medication-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+}
+
+[data-bs-theme="dark"] .medication-card {
+    background-color: var(--bs-gray-800);
+    box-shadow: none;
+    border: 1px solid var(--bs-gray-700);
+}
+
+.no-results {
+    text-align: center;
+    margin-top: 4rem;
+    color: var(--bs-gray-600);
+}
+
+@media (max-width: 768px) {
+    .medicaments-container {
+        padding: 1.5rem;
+    }
+    .search-header {
+        margin-bottom: 2rem;
+    }
+}

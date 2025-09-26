@@ -1,0 +1,205 @@
+/* --- Main Calendar Card --- */
+.calendar-glass-card {
+    padding: 20px;
+}
+
+/* --- Calendar Event Styling --- */
+.rbc-event {
+    background-color: rgba(0, 86, 179, 0.8);
+    border-color: #004a99;
+    padding: 4px 8px;
+}
+
+.rbc-day-slot .rbc-event {
+    border: 1px solid #004a99;
+}
+
+.rbc-slot-selection {
+    background-color: rgba(0, 86, 179, 0.3);
+}
+
+.rbc-today {
+    background-color: rgba(0, 86, 179, 0.05);
+}
+
+[data-theme="dark"] .rbc-today {
+    background-color: rgba(144, 197, 255, 0.1);
+}
+
+[data-theme="dark"] .rbc-event {
+    background-color: rgba(144, 197, 255, 0.7);
+    border-color: #90c5ff;
+}
+
+[data-theme="dark"] .rbc-slot-selection {
+    background-color: rgba(144, 197, 255, 0.3);
+}
+
+/* --- Glass Modal --- */
+.glass-modal .modal-content {
+    background: rgba(255, 255, 255, 0.25);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    border-radius: 15px;
+    color: #333;
+}
+
+.glass-modal .modal-header {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.4);
+}
+
+.glass-modal .modal-footer {
+    border-top: 1px solid rgba(255, 255, 255, 0.4);
+}
+
+[data-theme="dark"] .glass-modal .modal-content {
+    background: rgba(10, 25, 47, 0.3);
+    border: 1px solid rgba(135, 206, 250, 0.2);
+    color: #e0e0e0;
+}
+
+[data-theme="dark"] .glass-modal .modal-header {
+    border-bottom: 1px solid rgba(135, 206, 250, 0.2);
+}
+
+[data-theme="dark"] .glass-modal .modal-footer {
+    border-top: 1px solid rgba(135, 206, 250, 0.2);
+}
+
+[data-theme="dark"] .glass-modal .btn-close {
+    filter: invert(1) grayscale(100%) brightness(200%);
+}
+
+
+/* General overrides for the calendar */
+.rbc-calendar {
+    color: var(--text-color, #333);
+}
+
+/* Toolbar (header with navigation) */
+.rbc-toolbar {
+    border-bottom: 1px solid var(--border-color, #ddd);
+    padding-bottom: 10px;
+    margin-bottom: 10px;
+}
+
+.rbc-toolbar button {
+    background-color: var(--button-bg, #f8f9fa);
+    color: var(--button-color, #333);
+    border: 1px solid var(--button-border, #ddd);
+    transition: all 0.2s ease;
+}
+
+.rbc-toolbar button:hover, .rbc-toolbar button:focus {
+    background-color: var(--button-hover-bg, #e9ecef);
+    border-color: var(--button-hover-border, #ccc);
+}
+
+.rbc-btn-group .rbc-active {
+    background-color: var(--primary-color, #3fc17a) !important;
+    color: #fff !important;
+    border-color: var(--primary-color, #3fc17a) !important;
+}
+
+/* Calendar events */
+.rbc-event {
+    background-color: var(--primary-color, #3fc17a);
+    border: 1px solid var(--primary-color-dark, #34a866);
+    border-radius: 4px;
+}
+
+/* Days and headers */
+.rbc-header {
+    border-bottom: 1px solid var(--border-color, #ddd);
+}
+
+.rbc-day-bg.rbc-today {
+    background-color: var(--today-bg, #e6f7ff);
+}
+
+.loading-overlay {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: rgba(255, 255, 255, 0.8);
+    padding: 20px;
+    border-radius: 8px;
+    z-index: 10;
+    color: #333;
+}
+
+/* --- Dark Mode --- */
+[data-theme="dark"] .calendar-container {
+    --background-color: #2d3436;
+    --text-color: #f8f9fa;
+    --border-color: #4b5563;
+    --button-bg: #4a5568;
+    --button-color: #f8f9fa;
+    --button-border: #6b7280;
+    --button-hover-bg: #6b7280;
+    --button-hover-border: #9ca3af;
+    --primary-color: #3fc17a;
+    --primary-color-dark: #34a866;
+    --today-bg: rgba(63, 193, 122, 0.1);
+}
+
+[data-theme="dark"] .rbc-off-range-bg {
+    background: #374151;
+}
+
+/* --- Custom Toolbar --- */
+.rbc-custom-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    margin-bottom: 15px;
+}
+
+.rbc-toolbar-left,
+.rbc-toolbar-right {
+    display: flex;
+    gap: 8px;
+}
+
+.rbc-toolbar-center {
+    font-size: 1.2em;
+    font-weight: 600;
+    color: var(--text-color, #333);
+}
+
+.rbc-custom-toolbar .btn-light {
+    background-color: rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    color: var(--text-color, #333);
+    box-shadow: none;
+}
+
+.rbc-custom-toolbar .btn-light:hover {
+    background-color: rgba(255, 255, 255, 0.4);
+}
+
+.rbc-custom-toolbar .btn-primary {
+    background-color: #0056b3; /* A more professional blue */
+    border-color: #0056b3;
+    box-shadow: none;
+}
+
+[data-theme="dark"] .rbc-custom-toolbar .btn-light {
+    background-color: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: var(--text-color, #f8f9fa);
+}
+
+[data-theme="dark"] .rbc-custom-toolbar .btn-light:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+[data-theme="dark"] .rbc-custom-toolbar .btn-primary {
+    background-color: #90c5ff;
+    border-color: #90c5ff;
+    color: #1a1a1a;
+}
+

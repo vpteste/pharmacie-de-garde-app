@@ -1,0 +1,91 @@
+.register-page-wrapper {
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    min-height: 100vh; /* Fallback for browsers that do not support dvh */
+    min-height: 100dvh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 0;
+}
+
+.register-container {
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+}
+
+.register-card {
+    border: none;
+    border-radius: 15px;
+    background-color: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+.register-title {
+    font-weight: 700;
+    color: #333;
+}
+
+.register-input {
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+}
+
+.register-input:focus {
+    background-color: #fff;
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+
+.register-button {
+    padding: 0.75rem;
+    font-size: 1.1rem;
+    font-weight: 600;
+    border-radius: 8px;
+    transition: all 0.3s ease-in-out;
+}
+
+.register-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(13, 110, 253, 0.3);
+}
+
+/* Dark Mode Overrides */
+[data-theme="dark"] .register-page-wrapper {
+    background: linear-gradient(135deg, #2c3e50 0%, #4b6584 100%);
+}
+
+[data-theme="dark"] .register-card {
+    background-color: rgba(45, 52, 54, 0.85);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+[data-theme="dark"] .register-title,
+[data-theme="dark"] .text-muted,
+[data-theme="dark"] .form-label {
+    color: #f8f9fa !important;
+}
+
+[data-theme="dark"] .register-input {
+    background-color: #2d3436;
+    border-color: #636e72;
+    color: #f8f9fa;
+}
+
+[data-theme="dark"] .register-input::placeholder {
+    color: #b2bec3;
+}
+
+@media (max-width: 768px) {
+    .register-page-wrapper {
+        padding: 1rem;
+    }
+
+    .register-card .card-body {
+        padding: 2rem 1.5rem !important;
+    }
+}

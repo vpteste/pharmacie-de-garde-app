@@ -1,0 +1,33 @@
+.user-register-page-wrapper {
+    background-color: #f0f2f5;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+}
+
+.user-register-container {
+    min-height: 100vh;
+}
+
+.user-register-card {
+    border: none;
+    border-radius: 1rem;
+    background-color: #ffffff;
+}
+
+.user-register-title {
+    font-weight: 700;
+    color: #333;
+}
+
+.user-register-input {
+    border-radius: 0.5rem;
+    padding: 0.75rem 1rem;
+}
+
+.user-register-button {
+    border-radius: 0.5rem;
+    padding: 0.75rem 1rem;
+    font-weight: 600;
+    transition: background-color 0.2s ease-in-out;
+}

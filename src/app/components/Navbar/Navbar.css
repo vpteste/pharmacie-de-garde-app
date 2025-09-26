@@ -1,114 +1,303 @@
-/*
-  Navbar.css
-  Design System: "Pharma-Chic"
-  Author: Gemini Pro
-  Date: 20/09/2025
-*/
-
-/* Conteneur principal de la barre de navigation */
-.navbar-container {
-    /* Positionnement et Box Model */
-    position: fixed;
-    bottom: 15px; /* On la décolle un peu du bord pour l'effet flottant */
-    left: 50%;
-    transform: translateX(-50%); /* Centrage horizontal parfait */
-    width: 95%;
-    max-width: 400px; /* Une largeur max pour les grands écrans mobiles */
-    height: 70px;
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-    padding: 0 10px;
-
-    /* Style et Thème */
-    background-color: rgba(255, 255, 255, 0.9); /* Fond blanc légèrement transparent */
-    backdrop-filter: blur(10px); /* Effet de verre dépoli (pour les navigateurs compatibles) */
-    -webkit-backdrop-filter: blur(10px);
-    border-radius: 35px; /* Bords très arrondis pour l'effet pilule */
-    border: 1px solid rgba(0, 0, 0, 0.05);
-    box-shadow: 0 8px 32px rgba(44, 62, 80, 0.2); /* Ombre plus prononcée et diffuse */
-    z-index: 1000;
+/* === Liquid Navbar by Gemini - Base Variables (Light Theme) === */
+:root {
+    --navbar-width: 110px;
+    --navbar-background: rgba(249, 249, 250, 0.85);
+    --bubble-inactive-bg: rgba(255, 255, 255, 0.4);
+    --bubble-hover-bg: rgba(255, 255, 255, 0.8);
+    --text-inactive: #5a5a5f;
+    --text-active: #000000;
+    --green-glow: #3fc17a;
+    --animation-speed: 0.6s;
+    --animation-curve: cubic-bezier(0.25, 0.1, 0.25, 1);
 }
 
-/* Chaque item de navigation */
-.nav-item {
+/* Dark theme override can be defined here if needed */
+[data-bs-theme="dark"] {
+    --navbar-background: rgba(18, 18, 18, 0.75);
+    --bubble-inactive-bg: rgba(255, 255, 255, 0.08);
+    --bubble-hover-bg: rgba(255, 255, 255, 0.18);
+    --text-inactive: #a1a1a6;
+    --text-active: #ffffff;
+}
+
+/* === Main Navbar Container === */
+.liquid-navbar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    height: 100vh;
+    width: var(--navbar-width);
+    background: var(--navbar-background);
+    backdrop-filter: blur(25px) saturate(180%);
+    -webkit-backdrop-filter: blur(25px) saturate(180%);
+    border-right: 1px solid rgba(0, 0, 0, 0.07);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 0;
+    z-index: 1020;
+    transition: background var(--animation-speed) ease;
+}
+
+.nav-links {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+    width: 100%;
+    padding-top: 40px;
+}
+
+/* === The Glass Bubble Effect === */
+.nav-bubble {
+    position: relative;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    width: 80px;
+    height: 80px;
     text-decoration: none;
-    font-size: 11px;
-    font-weight: 500;
-    color: #8e8e93; /* Gris neutre pour les inactifs */
-    position: relative; /* Nécessaire pour le pseudo-élément de la pilule */
-    z-index: 1;
-    padding: 8px 12px;
-    border-radius: 20px;
-    transition: color 0.4s ease, transform 0.3s ease;
+    border-radius: 30px;
+    background: var(--bubble-inactive-bg);
+    box-shadow: 
+        0 8px 32px 0 rgba(0, 0, 0, 0.1),
+        inset 0 1px 1px 0 rgba(255, 255, 255, 0.6);
+    overflow: hidden;
+    transition: 
+        transform var(--animation-speed) var(--animation-curve),
+        background var(--animation-speed) var(--animation-curve),
+        box-shadow var(--animation-speed) var(--animation-curve),
+        border-radius var(--animation-speed) var(--animation-curve);
 }
 
-.nav-item:hover {
-    color: #2c3e50; /* Un peu plus foncé au survol */
+/* Z-index fix for icon/text to be above the floating indicator */
+.nav-icon-container,
+.nav-text {
+    position: relative;
+    z-index: 2;
 }
 
-/* L'état ACTIF - Le cœur du design */
-.nav-item.active {
-    color: #3fc17a; /* Le vert signature pour le texte et l'icône */
-    font-weight: 600;
-    transform: translateY(-2px); /* Léger soulèvement de l'item actif */
-}
-
-/* La "pilule" de fond pour l'item actif */
-.nav-item.active::before {
+.nav-bubble::before {
     content: '';
     position: absolute;
     top: 0;
     left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: #e6f7ec; /* Vert très pâle */
-    border-radius: 20px; /* Bords arrondis correspondants */
-    z-index: -1;
-    transform: scale(1.1); /* Un peu plus grand que l'item */
-    opacity: 1;
-    transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94), opacity 0.4s ease;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.25) 0%, rgba(255, 255, 255, 0) 60%);
+    transform: translateX(-100%);
+    transition: transform var(--animation-speed) ease;
+    z-index: 1; /* Ensure highlight is above background but below text */
 }
 
-/* Icône SVG */
+/* === Icon and Text Styling === */
 .nav-icon {
-    width: 26px;
-    height: 26px;
-    margin-bottom: 5px;
-    transition: stroke 0.4s ease;
+    font-size: 28px;
+    color: var(--text-inactive);
+    transition: all var(--animation-speed) var(--animation-curve);
 }
 
-/* Sur les écrans de bureau, on transforme la barre en une navigation latérale discrète */
-@media (min-width: 769px) {
-    .navbar-container {
-        position: fixed;
-        left: 0;
-        top: 0;
+.nav-text {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-inactive);
+    margin-top: 5px;
+    transition: all var(--animation-speed) var(--animation-curve);
+}
+
+/* === States: Default, Hover, Active === */
+
+/* Default Highlighted Item (Pharmacies) */
+.nav-bubble.default-active {
+    box-shadow: 
+        0 0 15px var(--green-glow),
+        0 0 20px rgba(63, 193, 122, 0.5),
+        inset 0 0 0 1.5px rgba(0, 0, 0, 0.1);
+}
+
+.nav-bubble.default-active .nav-icon {
+    color: var(--green-glow);
+    text-shadow: 0 0 10px var(--green-glow);
+}
+
+/* Hover & Focus State - With Morphing Effect */
+.nav-bubble:hover,
+.nav-bubble:focus-visible {
+    transform: scale(1.1) rotate(-2deg);
+    background: var(--bubble-hover-bg);
+    border-radius: 25px 35px 22px 38px;
+    box-shadow: 
+        0 8px 40px rgba(0, 0, 0, 0.2),
+        0 0 20px rgba(0, 0, 0, 0.1),
+        inset 0 2px 4px 0 rgba(255, 255, 255, 0.7),
+        inset 0 -2px 4px 0 rgba(0, 0, 0, 0.05);
+}
+
+.nav-bubble:hover::before {
+    transform: translateX(100%);
+}
+
+.nav-bubble:hover .nav-icon,
+.nav-bubble:hover .nav-text,
+.nav-bubble:focus-visible .nav-icon,
+.nav-bubble:focus-visible .nav-text {
+    color: var(--text-active);
+}
+
+/* --- Floating Indicator --- */
+.floating-indicator {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+    border-radius: 30px;
+    background: linear-gradient(135deg, var(--green-glow), #2a8a56);
+    box-shadow: 0 5px 25px rgba(63, 193, 122, 0.5);
+}
+
+/* Active State (text/icon color only) */
+.nav-bubble.active .nav-icon,
+.nav-bubble.active .nav-text {
+    color: #fff; /* Force white text on green active background */
+}
+
+/* === Language Switcher === */
+.language-switcher {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding-bottom: 20px;
+}
+
+.language-bubble {
+    cursor: pointer;
+    width: 45px;
+    height: 45px;
+    border-radius: 15px;
+    border: 1.5px solid rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--text-inactive);
+    font-weight: bold;
+    font-size: 14px;
+    display: grid;
+    place-items: center;
+    transition: all var(--animation-speed) cubic-bezier(0.19, 1, 0.22, 1);
+}
+
+.language-bubble:hover {
+    background: rgba(255, 255, 255, 0.2);
+    color: var(--text-active);
+    transform: scale(1.1);
+}
+
+.language-bubble.active {
+    background: var(--text-active);
+    color: #1c1c1e;
+    border-color: var(--text-active);
+    transform: scale(1.05);
+    box-shadow: 0 0 10px var(--text-active);
+}
+
+/* === Main Content Padding === */
+.main-content {
+    padding-left: var(--navbar-width);
+    transition: padding-left 0.3s ease;
+}
+
+/* === Responsive Design for Mobile === */
+@media (max-width: 768px) {
+    .liquid-navbar {
+        width: 100vw;
+        height: 75px;
         bottom: 0;
-        width: 80px; /* Barre latérale fine */
-        height: 100%;
-        max-width: none;
-        flex-direction: column; /* Passage en colonne */
-        justify-content: center;
+        top: auto;
+        flex-direction: row;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        border-right: none;
+        padding: 0 10px;
+    }
+
+    .nav-links {
+        flex-direction: row;
+        justify-content: space-around;
         align-items: center;
-        border-radius: 0; /* Plus de bords arrondis */
-        transform: translateX(0); /* On annule le centrage */
-        padding: 20px 0;
-        gap: 20px; /* Espace entre les icônes */
-        box-shadow: 2px 0 15px rgba(0, 0, 0, 0.08);
-        background-color: #ffffff;
-        backdrop-filter: none;
+        flex-grow: 1;
+        padding-top: 0;
+        gap: 5px;
     }
 
-    .nav-item {
-        font-size: 12px;
+    .nav-bubble {
+        width: 55px;
+        height: 55px;
+        border-radius: 18px;
     }
 
-    .nav-item.active::before {
-        border-radius: 15px;
+    .nav-icon {
+        font-size: 20px;
+    }
+
+    .nav-text {
+        display: none; /* Hide text on mobile for a cleaner look */
+    }
+
+    .language-switcher {
+        display: none; /* Hide on mobile to save space */
+    }
+
+    .main-content {
+        padding-left: 0;
+        padding-bottom: 75px;
     }
 }
+
+/* === Icon Micro-interaction Animations === */
+
+@keyframes icon-swing {
+    20% { transform: rotate(15deg); }
+    40% { transform: rotate(-10deg); }
+    60% { transform: rotate(5deg); }
+    80% { transform: rotate(-5deg); }
+    100% { transform: rotate(0deg); }
+}
+
+@keyframes icon-spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+@keyframes icon-tada {
+    0% {transform: scale(1);}
+    10%, 20% {transform: scale(0.9) rotate(-3deg);}
+    30%, 50%, 70%, 90% {transform: scale(1.1) rotate(3deg);}
+    40%, 60%, 80% {transform: scale(1.1) rotate(-3deg);}
+    100% {transform: scale(1) rotate(0);}
+}
+
+@keyframes icon-flip {
+    0% { transform: perspective(400px) rotateY(0); }
+    100% { transform: perspective(400px) rotateY(360deg); }
+}
+
+@keyframes icon-shake {
+    0%, 100% {transform: translateX(0);}
+    10%, 30%, 50%, 70%, 90% {transform: translateX(-5px);}
+    20%, 40%, 60%, 80% {transform: translateX(5px);}
+}
+
+/* Applying animations to icons on hover/focus */
+.nav-bubble:hover .nav-icon,
+.nav-bubble:focus-visible .nav-icon {
+    animation-duration: 0.8s;
+    animation-timing-function: ease-in-out;
+}
+
+.nav-home:hover .nav-icon, .nav-home:focus-visible .nav-icon { animation-name: icon-swing; }
+.nav-pharmacies:hover .nav-icon, .nav-pharmacies:focus-visible .nav-icon { animation-name: icon-spin; }
+.nav-appointments:hover .nav-icon, .nav-appointments:focus-visible .nav-icon { animation-name: icon-tada; }
+.nav-medications:hover .nav-icon, .nav-medications:focus-visible .nav-icon { animation-name: icon-flip; }
+.nav-pro-area:hover .nav-icon, .nav-pro-area:focus-visible .nav-icon { animation-name: icon-shake; }
+.nav-user-area:hover .nav-icon, .nav-user-area:focus-visible .nav-icon { animation-name: icon-tada; animation-duration: 1s; }

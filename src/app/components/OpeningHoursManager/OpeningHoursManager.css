@@ -1,0 +1,30 @@
+/* Styles for the OpeningHoursManager component */
+
+.day-row {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 15px;
+    padding: 10px;
+    border-radius: 8px;
+    background-color: rgba(0, 0, 0, 0.02);
+}
+
+.day-label {
+    font-weight: 500;
+    width: 100px;
+}
+
+.time-inputs {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.time-inputs .form-control {
+    width: 120px;
+}
+
+[data-theme="dark"] .day-row {
+    background-color: rgba(255, 255, 255, 0.05);
+}

@@ -1,0 +1,8 @@
+{
+  "crons": [
+    {
+      "path": "/api/dev/update-on-duty-status",
+      "schedule": "*/5 * * * *"
+    }
+  ]
+}

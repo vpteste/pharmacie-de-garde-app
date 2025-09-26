@@ -1,53 +1,64 @@
 'use client';
+
 import React from 'react';
-import DoctorSearch from '../../components/RendezVous/DoctorSearch';
-import DoctorList from '../../components/RendezVous/DoctorList';
-import '../../components/RendezVous/RendezVous.css';
-
-import { Doctor, SearchFilters } from './types';
-
-// Données de simulation pour les docteurs
-const simulatedDoctors: Doctor[] = [
-  {
-    id: '1',
-    name: 'Dr. Marie Dubois',
-    specialty: 'Médecin généraliste',
-    address: '123 Rue de la Santé, 75001 Paris',
-    avatar: 'https://i.pravatar.cc/150?img=1' // Image aléatoire
-  },
-  {
-    id: '2',
-    name: 'Dr. Jean Martin',
-    specialty: 'Dentiste',
-    address: '45 Avenue des Dents, 75016 Paris',
-    avatar: 'https://i.pravatar.cc/150?img=2'
-  },
-  {
-    id: '3',
-    name: 'Dr. Sophie Leroy',
-    specialty: 'Cardiologue',
-    address: '78 Boulevard du Coeur, 75008 Paris',
-    avatar: 'https://i.pravatar.cc/150?img=3'
-  }
-];
+import { Container, Row, Col, Card, Button } from 'react-bootstrap';
+import Link from 'next/link';
+import { useTranslation } from 'react-i18next';
+import './RendezVous.css';
 
 export default function RendezVousPage() {
-  // Pour l'instant, la liste des docteurs est statique.
-  // const [doctors, setDoctors] = React.useState(simulatedDoctors);
+    const { t } = useTranslation();
 
-  const handleSearch = (filters: SearchFilters) => {
-    console.log('Filtres de recherche:', filters);
-    // La logique de filtrage sera implémentée ici
-  };
+    const tips = [
+        {
+            title: t('tip_1_title'),
+            text: t('tip_1_text'),
+        },
+        {
+            title: t('tip_2_title'),
+            text: t('tip_2_text'),
+        },
+        {
+            title: t('tip_3_title'),
+            text: t('tip_3_text'),
+        },
+    ];
 
-  return (
-    <div className="rendezvous-container">
-      <header className="rendezvous-header">
-        <h1>Prendre un Rendez-vous</h1>
-        <p>Trouvez le professionnel de santé qui vous convient.</p>
-      </header>
-      <DoctorSearch onSearch={handleSearch} />
-      <DoctorList doctors={simulatedDoctors} />
-    </div>
-  );
+    return (
+        <div className="rendezvous-container">
+            <Container>
+                <Row className="justify-content-center">
+                    <Col lg={10} xl={8}>
+                        <Card className="hero-card">
+                            <Card.Body>
+                                <h1>{t('appointments_page_title')}</h1>
+                                <p className="lead text-muted">
+                                    {t('appointments_page_subtitle')}
+                                </p>
+                                <Link href="/pharmacies" passHref>
+                                    <Button variant="primary" size="lg">{t('find_pharmacy_now_button')}</Button>
+                                </Link>
+                            </Card.Body>
+                        </Card>
+                    </Col>
+                </Row>
+
+                <div className="tips-section">
+                    <h2>{t('practical_tips_title')}</h2>
+                    <Row xs={1} md={3} className="g-4">
+                        {tips.map((tip, index) => (
+                            <Col key={index}>
+                                <Card className="tip-card">
+                                    <Card.Body>
+                                        <Card.Title as="h5">{tip.title}</Card.Title>
+                                        <Card.Text>{tip.text}</Card.Text>
+                                    </Card.Body>
+                                </Card>
+                            </Col>
+                        ))}
+                    </Row>
+                </div>
+            </Container>
+        </div>
+    );
 }

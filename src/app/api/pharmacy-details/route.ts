@@ -1,54 +1,41 @@
-import { NextResponse, NextRequest } from 'next/server';
+import { NextResponse } from 'next/server';
 
-export async function GET(request: NextRequest) {
-  const searchParams = request.nextUrl.searchParams;
-  const placeId = searchParams.get('placeId');
+// This route fetches details for multiple pharmacies from the Google Places API.
+// It's designed to be called by our own frontend to avoid exposing the API key for place details lookups.
 
-  if (!placeId) {
-    return new NextResponse('Missing placeId', { status: 400 });
-  }
+export async function POST(request: Request) {
+    try {
+        const { placeIds } = await request.json();
 
-  const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
-  if (!apiKey) {
-    console.error('Google Maps API key is missing.');
-    return new NextResponse('Internal Server Error: API key missing', { status: 500 });
-  }
+        if (!placeIds || !Array.isArray(placeIds) || placeIds.length === 0) {
+            return new NextResponse('Bad Request: placeIds array is required', { status: 400 });
+        }
 
-  const url = `https://places.googleapis.com/v1/places/${placeId}`;
+        const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
+        if (!apiKey) {
+            throw new Error("Google Maps API key is not configured on the server.");
+        }
 
-  try {
-    const response = await fetch(url, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-Goog-Api-Key': apiKey,
-        'X-Goog-FieldMask': 'displayName,location,formattedAddress,id,internationalPhoneNumber,businessStatus'
-      },
-    });
+        const detailPromises = placeIds.map(placeId => {
+            const url = `https://maps.googleapis.com/maps/api/place/details/json?place_id=${placeId}&fields=name,vicinity,place_id,formatted_phone_number&key=${apiKey}`;
+            return fetch(url).then(res => res.json());
+        });
 
-    const data = await response.json();
+        const detailResults = await Promise.all(detailPromises);
 
-    if (!response.ok) {
-      console.error('Google Places API error:', data);
-      return new NextResponse(`Google Places API error: ${data.message || response.statusText}`, { status: response.status });
+        const pharmacies = detailResults.map(result => {
+            if (result.status === 'OK') {
+                return result.result;
+            }
+            // Log the error for the specific placeId but don't fail the whole request
+            console.warn(`Failed to fetch details for a placeId:`, result);
+            return null;
+        }).filter(p => p !== null); // Filter out any failed requests
+
+        return NextResponse.json({ pharmacies });
+
+    } catch (error) {
+        console.error('Error in /api/pharmacy-details:', error);
+        return new NextResponse('Internal Server Error', { status: 500 });
     }
-
-    const place = data;
-
-    const pharmacyDetails = {
-      id: place.id,
-      name: place.displayName?.text,
-      address: place.formattedAddress,
-      lat: place.location?.latitude,
-      lng: place.location?.longitude,
-      status: place.businessStatus ? (place.businessStatus === 'OPERATIONAL' ? 'Ouvert' : 'Fermé') : 'Non disponible',
-      phone_number: place.internationalPhoneNumber || 'Non disponible',
-    };
-
-    return NextResponse.json(pharmacyDetails);
-
-  } catch (error) {
-    console.error('An error occurred during the Google Places API request:', error);
-    return new NextResponse('Internal Server Error', { status: 500 });
-  }
 }

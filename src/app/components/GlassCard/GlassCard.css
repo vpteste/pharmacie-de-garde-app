@@ -1,0 +1,24 @@
+.glass-card {
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    border-radius: 15px;
+    padding: 1.5rem;
+    
+    /* The Glass Effect */
+    background: rgba(255, 255, 255, 0.25);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px); /* Safari support */
+    
+    /* Soft Shadow for depth */
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.2);
+
+    color: #333;
+}
+
+[data-theme="dark"] .glass-card {
+    background: rgba(10, 25, 47, 0.3); /* Dark blueish glass */
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(135, 206, 250, 0.2); /* Faint sky-blue border */
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+    color: #e0e0e0;
+}

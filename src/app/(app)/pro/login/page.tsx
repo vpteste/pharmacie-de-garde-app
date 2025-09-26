@@ -1,95 +1,109 @@
 'use client';
-import { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { Form, Button, Card, Container, Row, Col, Alert, Spinner } from 'react-bootstrap';
-import { signInWithEmailAndPassword } from 'firebase/auth';
-import { auth } from '../../../firebase';
+import { Container, Row, Col, Card, Form, Button, Spinner, Alert } from 'react-bootstrap';
+import { useAuth } from '@/app/components/providers/AuthContext';
 import Link from 'next/link';
-import './login.css';
+import { useTranslation } from 'react-i18next';
+import './Login.css';
 
-export default function LoginPage() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const router = useRouter();
+const LoginPage = () => {
+    const { t } = useTranslation();
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [error, setError] = useState<string | null>(null);
+    const [loading, setLoading] = useState(false);
+    const { login, userProfile } = useAuth();
+    const router = useRouter();
 
-  const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsLoading(true);
-    setError(null);
 
-    try {
-      await signInWithEmailAndPassword(auth, email, password);
-      router.push('/pro/dashboard'); // Redirect to dashboard on success
-    } catch (error: any) {
-      console.error("Login error:", error.code);
-      switch (error.code) {
-        case 'auth/user-not-found':
-        case 'auth/wrong-password':
-        case 'auth/invalid-credential':
-          setError("Adresse e-mail ou mot de passe incorrect.");
-          break;
-        default:
-          setError("Une erreur est survenue. Veuillez réessayer.");
-          break;
-      }
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
-  return (
-    <div className="login-page">
-      <Container>
-        <Row className="justify-content-center">
-          <Col md={6} lg={5} xl={4}>
-            <Card className="login-card">
-              <Card.Body>
-                <div className="text-center mb-4">
-                  <h1 className="login-title">Espace Professionnel</h1>
-                  <p className="text-muted">Connectez-vous pour gérer votre établissement.</p>
-                </div>
-                <Form onSubmit={handleLogin}>
-                  {error && <Alert variant="danger">{error}</Alert>}
-                  <Form.Group className="mb-3" controlId="email">
-                    <Form.Label>Adresse e-mail</Form.Label>
-                    <Form.Control
-                      type="email"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      required
-                      disabled={isLoading}
-                    />
-                  </Form.Group>
+    const handleLogin = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setError(null);
+        setLoading(true);
 
-                  <Form.Group className="mb-3" controlId="password">
-                    <Form.Label>Mot de passe</Form.Label>
-                    <Form.Control
-                      type="password"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      required
-                      disabled={isLoading}
-                    />
-                  </Form.Group>
+        try {
+            const profile = await login(email, password);
+            
+            if (profile.role === 'pharmacist') {
+                router.push('/pro/dashboard');
+            } else {
+                // Not a pharmacist, deny access.
+                setError(t('pro_login_access_denied'));
+                await logout(); // Log the user out as they don't belong here.
+                setLoading(false);
+            }
 
-                  <div className="d-grid">
-                    <Button variant="primary" type="submit" disabled={isLoading}>
-                      {isLoading ? <Spinner animation="border" size="sm" /> : 'Se connecter'}
-                    </Button>
-                  </div>
-                </Form>
-              </Card.Body>
-              <Card.Footer className="text-center">
-                <small className="text-muted">
-                  Pas encore de compte ? <Link href="/inscrire-etablissement">Inscrivez votre établissement</Link>
-                </small>
-              </Card.Footer>
-            </Card>
-          </Col>
-        </Row>
-      </Container>
-    </div>
-  );
-}
+        } catch (err: any) {
+            console.error("Login error:", err);
+            if (err.code === 'auth/user-not-found' || err.code === 'auth/wrong-password' || err.message.includes("User profile not found")) {
+                setError(t('invalid_credentials_error'));
+            } else if (err.code === 'auth/invalid-email') {
+                setError(t('invalid_email_error'));
+            } else {
+                setError(t('login_error'));
+            }
+            setLoading(false);
+        }
+        // Do not set loading to false here on success, as the page will be redirecting
+    };
+
+    return (
+        <div className="login-page-wrapper">
+            <Container fluid className="login-container">
+                <Row className="justify-content-center align-items-center h-100">
+                    <Col xs={12} md={8} lg={6} xl={4}>
+                        <Card className="login-card shadow-lg">
+                            <Card.Body className="p-4 p-md-5">
+                                <div className="text-center mb-4">
+                                    <h2 className="login-title">{t('pro_space_title')}</h2>
+                                    <p className="text-muted">{t('login_subtitle')}</p>
+                                </div>
+                                
+                                {error && <Alert variant="danger">{error}</Alert>}
+
+                                <Form onSubmit={handleLogin}>
+                                    <Form.Group className="mb-3" controlId="formBasicEmail">
+                                        <Form.Label>{t('email_label')}</Form.Label>
+                                        <Form.Control
+                                            type="email"
+                                            placeholder={t('email_placeholder')}
+                                            value={email}
+                                            onChange={(e) => setEmail(e.target.value)}
+                                            required
+                                            className="login-input"
+                                        />
+                                    </Form.Group>
+
+                                    <Form.Group className="mb-4" controlId="formBasicPassword">
+                                        <Form.Label>{t('password_label')}</Form.Label>
+                                        <Form.Control
+                                            type="password"
+                                            placeholder={t('password_placeholder')}
+                                            value={password}
+                                            onChange={(e) => setPassword(e.target.value)}
+                                            required
+                                            className="login-input"
+                                        />
+                                    </Form.Group>
+
+                                    <Button variant="primary" type="submit" className="w-100 login-button" disabled={loading}>
+                                        {loading ? <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" /> : t('login_button')}
+                                    </Button>
+                                </Form>
+                                <div className="mt-4 text-center">
+                                    <p className="text-muted">
+                                        {t('no_account')} <Link href="/inscrire-etablissement">{t('register_link')}</Link>
+                                    </p>
+                                </div>
+                            </Card.Body>
+                        </Card>
+                    </Col>
+                </Row>
+            </Container>
+        </div>
+    );
+};
+
+export default LoginPage;

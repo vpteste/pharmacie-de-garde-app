@@ -1,0 +1,33 @@
+.user-login-page-wrapper {
+    background-color: #f0f2f5;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+}
+
+.user-login-container {
+    min-height: 100vh;
+}
+
+.user-login-card {
+    border: none;
+    border-radius: 1rem;
+    background-color: #ffffff;
+}
+
+.user-login-title {
+    font-weight: 700;
+    color: #333;
+}
+
+.user-login-input {
+    border-radius: 0.5rem;
+    padding: 0.75rem 1rem;
+}
+
+.user-login-button {
+    border-radius: 0.5rem;
+    padding: 0.75rem 1rem;
+    font-weight: 600;
+    transition: background-color 0.2s ease-in-out;
+}

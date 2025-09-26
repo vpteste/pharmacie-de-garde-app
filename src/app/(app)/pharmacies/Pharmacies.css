@@ -1,0 +1,70 @@
+/*
+  === Dynamic Marker System ===
+  - .map-marker: Base style for all markers.
+  - .pulsing: Adds the heartbeat animation.
+  - .marker-green, .marker-orange, .marker-red, .marker-grey: Sets the color.
+*/
+
+/* 1. Base Marker Style (a simple circle) */
+.map-marker {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  border: 2px solid white;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.4);
+  transform-origin: center;
+}
+
+.map-marker:hover {
+    transform: scale(1.2);
+}
+
+/* 2. The Animation Class */
+.pulsing {
+  /* The animation name is dynamically set by color class */
+  animation-duration: 2s;
+  animation-iteration-count: infinite;
+}
+
+/* 3. Color Modifiers & Their Specific Animations */
+
+/* GREEN (On-duty, low traffic) */
+.marker-green {
+  background-color: #28a745;
+  animation-name: pulse-green;
+}
+@keyframes pulse-green {
+  0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(40, 167, 69, 0.7); }
+  70% { transform: scale(1.1); box-shadow: 0 0 0 12px rgba(40, 167, 69, 0); }
+  100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(40, 167, 69, 0); }
+}
+
+/* ORANGE (On-duty, moderate traffic) */
+.marker-orange {
+  background-color: #fd7e14;
+  animation-name: pulse-orange; 
+}
+@keyframes pulse-orange {
+  0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(253, 126, 20, 0.7); }
+  70% { transform: scale(1.1); box-shadow: 0 0 0 12px rgba(253, 126, 20, 0); }
+  100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(253, 126, 20, 0); }
+}
+
+/* RED (On-duty, high traffic) */
+.marker-red {
+  background-color: #dc3545;
+  animation-name: pulse-red;
+}
+@keyframes pulse-red {
+  0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.7); }
+  70% { transform: scale(1.1); box-shadow: 0 0 0 12px rgba(220, 53, 69, 0); }
+  100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(220, 53, 69, 0); }
+}
+
+/* GREY (Off-duty) */
+.marker-grey {
+  background-color: #6c757d;
+  opacity: 0.6;
+}

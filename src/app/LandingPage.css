@@ -1,40 +1,97 @@
-.landing-page {
+:root {
+    --brand-green: #28a745;
+    --brand-green-dark: #218838;
+    --text-light: #f8f9fa;
+}
+
+.landing-container {
     display: flex;
     flex-direction: column;
-    justify-content: center;
     align-items: center;
+    justify-content: center;
     height: 100vh;
     width: 100vw;
-    background: linear-gradient(135deg, #2a7c52, #3fc17a);
-    color: white;
+    background: linear-gradient(135deg, #34c759, #28a745);
+    color: var(--text-light);
     text-align: center;
-    padding: 20px;
+    padding: 2rem;
+}
+
+.landing-logo {
+    width: 100px;
+    height: 100px;
+    margin-bottom: 2rem;
 }
 
 .landing-title {
     font-size: 2.5rem;
     font-weight: bold;
-    margin-bottom: 1rem;
+    margin-bottom: 0.5rem;
 }
 
 .landing-subtitle {
-    font-size: 1.2rem;
+    font-size: 1.25rem;
+    font-weight: 300;
     margin-bottom: 3rem;
-    opacity: 0.9;
+    max-width: 600px;
 }
 
 .landing-button {
     font-size: 1.5rem;
-    padding: 15px 30px;
-    border-radius: 50px;
-    background-color: white;
-    color: #2a7c52;
-    border: none;
     font-weight: bold;
-    cursor: pointer;
-    transition: transform 0.2s ease;
+    padding: 1rem 3rem;
+    border-radius: 50px;
+    background-color: var(--text-light);
+    color: var(--brand-green);
+    border: none;
+    transition: transform 0.2s ease, background-color 0.2s ease;
+    text-decoration: none;
 }
 
 .landing-button:hover {
     transform: scale(1.05);
+    background-color: #ffffff;
+}
+
+/* --- Responsive Styles --- */
+@media (max-width: 768px) {
+    .landing-title {
+        font-size: 2rem;
+    }
+
+    .landing-subtitle {
+        font-size: 1.1rem;
+        margin-bottom: 2.5rem;
+    }
+
+    .landing-button {
+        font-size: 1.25rem;
+        padding: 0.8rem 2.5rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .landing-container {
+        padding: 1.5rem;
+    }
+
+    .landing-logo {
+        width: 80px;
+        height: 80px;
+        margin-bottom: 1.5rem;
+    }
+
+    .landing-title {
+        font-size: 1.8rem;
+    }
+
+    .landing-subtitle {
+        font-size: 1rem;
+        margin-bottom: 2rem;
+    }
+
+    .landing-button {
+        width: 90%;
+        padding: 1rem;
+    }
 }

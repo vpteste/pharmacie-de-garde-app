@@ -1,0 +1,122 @@
+/* === Dashboard Page Specific Styles === */
+
+/* 1. Main Container: The Dynamic Background */
+.dashboard-wrapper {
+    min-height: 100dvh;
+    padding: 2rem;
+    background: linear-gradient(120deg, #a1c4fd 0%, #c2e9fb 100%);
+    transition: background 0.5s ease;
+}
+
+/* 2. Main Dashboard Card Content Styling */
+.main-dashboard-card .card-header {
+    /* The header is now a simple div, so we need to define its padding and styles */
+    padding: 1rem 1.5rem;
+    margin: -1.5rem -1.5rem 1rem -1.5rem; /* Counteract the parent padding */
+    background: rgba(255, 255, 255, 0.3);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.4);
+    border-top-left-radius: 15px;
+    border-top-right-radius: 15px;
+    color: #1a2c4e;
+    font-weight: 500;
+}
+
+.main-dashboard-card .card-body {
+    padding: 0; /* The parent GlassCard has padding, so we remove it here */
+}
+
+/* 3. Tabs Enhancement */
+.main-dashboard-card .nav-tabs {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    padding: 0 1.5rem; /* Align with card content */
+}
+
+.main-dashboard-card .nav-tabs .nav-link {
+    border: none;
+    border-bottom: 3px solid transparent;
+    color: #555;
+    transition: all 0.3s ease;
+    padding: 0.5rem 1rem;
+}
+
+.main-dashboard-card .nav-tabs .nav-link.active {
+    background-color: transparent !important;
+    color: #0056b3 !important;
+    border-bottom: 3px solid #0056b3;
+    font-weight: 600;
+}
+
+/* 4. Dark Mode Vision */
+[data-theme="dark"] .dashboard-wrapper {
+    background: linear-gradient(120deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
+}
+
+[data-theme="dark"] .main-dashboard-card .card-header {
+    background: rgba(10, 25, 47, 0.5);
+    border-bottom: 1px solid rgba(135, 206, 250, 0.2);
+    color: #f0f0f0;
+}
+
+[data-theme="dark"] .main-dashboard-card .nav-tabs {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+[data-theme="dark"] .main-dashboard-card .nav-tabs .nav-link {
+    color: #a0a0a0;
+}
+
+[data-theme="dark"] .main-dashboard-card .nav-tabs .nav-link.active {
+    color: #90c5ff !important;
+    border-bottom: 3px solid #90c5ff;
+}
+
+[data-theme="dark"] .text-muted {
+    color: #adb5bd !important;
+}
+
+/* 5. New Stats Grid */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1.5rem;
+    margin-top: 1.5rem;
+}
+
+.stat-card {
+    padding: 1rem;
+    text-align: center;
+}
+
+.stat-card h5 {
+    font-size: 1rem;
+    font-weight: 500;
+    color: #333;
+    margin-bottom: 0.5rem;
+    opacity: 0.8;
+}
+
+.stat-card p {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #1a2c4e;
+    margin: 0;
+}
+
+[data-theme="dark"] .stat-card h5 {
+    color: #a0b3d1;
+}
+
+[data-theme="dark"] .stat-card p {
+    color: #f0f8ff;
+}
+
+/* 6. Responsiveness */
+@media (max-width: 768px) {
+    .dashboard-wrapper {
+        padding: 1rem;
+    }
+    .stats-grid {
+        gap: 1rem;
+        margin-top: 1rem;
+    }
+}
