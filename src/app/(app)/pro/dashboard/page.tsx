@@ -4,7 +4,7 @@ import { useRouter } from 'next/navigation';
 import { useAuth } from '@/app/components/providers/AuthContext';
 import { Container, Row, Col, Button, Spinner, Tabs, Tab } from 'react-bootstrap';
 import { useTranslation } from 'react-i18next';
-import { motion } from 'framer-motion';
+import { motion, Variants } from 'framer-motion';
 import GlassCard from '@/app/components/GlassCard/GlassCard';
 import CalendarManager from '@/app/components/CalendarManager/CalendarManager';
 import InventoryManager from '@/app/components/InventoryManager/InventoryManager';
@@ -12,7 +12,7 @@ import OpeningHoursManager from '@/app/components/OpeningHoursManager/OpeningHou
 import './Dashboard.css';
 
 // Animation variants for staggered effect
-const containerVariants = {
+const containerVariants: Variants = {
   hidden: { opacity: 0 },
   show: {
     opacity: 1,
@@ -22,7 +22,7 @@ const containerVariants = {
   },
 };
 
-const itemVariants = {
+const itemVariants: Variants = {
   hidden: { y: 20, opacity: 0 },
   show: { y: 0, opacity: 1, transition: { duration: 0.5, ease: 'easeInOut' } },
 };
@@ -108,7 +108,7 @@ const DashboardPage = () => {
                                     </Button>
                                 </div>
                                 <div style={{padding: '1.5rem 1.5rem 0 1.5rem'}}>
-                                    <h4>{t('welcome_title')} {userProfile.name}!</h4>
+                                    <h4>{t('welcome_title')} {userProfile.role === 'pharmacist' && userProfile.name}!</h4>
                                     <p className="text-muted" style={{marginBottom: '1rem'}}>
                                         {t('welcome_message', { email: userProfile.email })}
                                     </p>

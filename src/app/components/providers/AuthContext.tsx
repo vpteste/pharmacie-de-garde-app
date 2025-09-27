@@ -4,11 +4,10 @@ import { createContext, useContext, useEffect, useState, ReactNode } from 'react
 import { 
     onAuthStateChanged, 
     User, 
-    createUserWithEmailAndPassword, 
     signInWithEmailAndPassword, 
     signOut 
 } from 'firebase/auth';
-import { doc, setDoc, getDoc } from 'firebase/firestore';
+import { doc, getDoc } from 'firebase/firestore';
 import { auth, db } from '@/app/firebase';
 
 // Define role-specific data structures

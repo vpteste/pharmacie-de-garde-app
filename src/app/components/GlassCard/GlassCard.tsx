@@ -1,12 +1,11 @@
 import React from 'react';
-import { motion } from 'framer-motion';
+import { motion, MotionProps } from 'framer-motion';
 import './GlassCard.css';
 
-interface GlassCardProps {
+// Combine custom props with all valid props for a framer-motion component
+interface GlassCardProps extends MotionProps {
   children: React.ReactNode;
   className?: string;
-  // Allow passing any framer-motion props
-  [key: string]: any;
 }
 
 const GlassCard: React.FC<GlassCardProps> = ({ children, className = '', ...rest }) => {

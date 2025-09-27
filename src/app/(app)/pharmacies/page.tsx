@@ -1,12 +1,10 @@
 'use client';
 
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { GoogleMap, OverlayView, InfoWindow } from '@react-google-maps/api';
-import { useAuth } from '@/app/components/providers/AuthContext';
 import { useMap } from '@/app/components/providers/MapProvider';
 import { useTranslation } from 'react-i18next';
-import { Spinner, Button, Badge } from 'react-bootstrap';
-import { useRouter } from 'next/navigation';
+import { Spinner, Badge } from 'react-bootstrap';
 import './Pharmacies.css';
 
 // --- Types ---
@@ -63,7 +61,6 @@ const CustomMarker = ({ pharmacy, onClick }: { pharmacy: Pharmacy, onClick: () =
     let className = 'map-marker';
     if (pharmacy.isOnDuty) {
       className += ' pulsing';
-      // Traffic light colors can be added here based on pharmacy.currentTraffic
       className += ' marker-green'; 
     } else {
       className += ' marker-grey';
@@ -78,12 +75,14 @@ const getPixelPositionOffset = (width: number, height: number) => ({
     y: -(height / 2),
 });
 
+const daysOfWeek = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
+
 export default function PharmaciesPage() {
     const { t } = useTranslation();
     const { isLoaded, loadError } = useMap();
     const [pharmacies, setPharmacies] = useState<Pharmacy[]>([]);
     const [selected, setSelected] = useState<Pharmacy | null>(null);
-    const [center, setCenter] = useState({ lat: 5.36, lng: -4.0083 });
+    const [center, _setCenter] = useState({ lat: 5.36, lng: -4.0083 });
 
     useEffect(() => {
         const fetchPharmacies = async () => {
@@ -126,7 +125,7 @@ export default function PharmaciesPage() {
                                     daysOfWeek.map(day => (
                                         <li key={day} className="d-flex justify-content-between">
                                             <span>{t(`day_${day}`)}:</span>
-                                            <strong>{selected.openingHours[day]?.isOpen ? `${selected.openingHours[day].open} - ${selected.openingHours[day].close}` : t('closed')}</strong>
+                                            <strong>{selected.openingHours && selected.openingHours[day]?.isOpen ? `${selected.openingHours[day].open} - ${selected.openingHours[day].close}` : t('closed')}</strong>
                                         </li>
                                     ))
                                 ) : (

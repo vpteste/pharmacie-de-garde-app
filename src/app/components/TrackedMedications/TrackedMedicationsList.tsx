@@ -48,7 +48,7 @@ const TrackedMedicationsList = ({ trackedMedicationIds, handleToggleTrack }: Tra
                 if (!response.ok) throw new Error('Failed to fetch statuses');
                 const data = await response.json();
                 setMedications(data.results);
-            } catch (err) {
+            } catch (_err) {
                 setError(t('error_fetching_tracked'));
             } finally {
                 setIsLoading(false);

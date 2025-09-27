@@ -4,12 +4,9 @@ import React, { useState, useCallback, useEffect } from 'react';
 import { Calendar, dateFnsLocalizer, Event as BigCalendarEvent, View } from 'react-big-calendar';
 import { Modal, Button, Alert } from 'react-bootstrap';
 import { useTranslation } from 'react-i18next';
-import format from 'date-fns/format';
-import parse from 'date-fns/parse';
-import startOfWeek from 'date-fns/startOfWeek';
-import getDay from 'date-fns/getDay';
-import fr from 'date-fns/locale/fr';
-import enUS from 'date-fns/locale/en-US';
+import { format, parse, startOfWeek, getDay } from 'date-fns';
+import { fr } from 'date-fns/locale/fr';
+import { enUS } from 'date-fns/locale/en-US';
 import { collection, getDocs, Timestamp } from 'firebase/firestore';
 import { useAuth } from '@/app/components/providers/AuthContext';
 import { db } from '@/app/firebase';
@@ -20,7 +17,7 @@ import "react-big-calendar/lib/css/react-big-calendar.css";
 import './CalendarManager.css';
 
 const locales = { 'fr': fr, 'en-US': enUS };
-const localizer = dateFnsLocalizer({ format, parse, startOfWeek: (date) => startOfWeek(date, { weekStartsOn: 1 }), getDay, locales });
+const localizer = dateFnsLocalizer({ format, parse, startOfWeek: (date: Date) => startOfWeek(date, { weekStartsOn: 1 }), getDay, locales });
 
 interface SlotInfo { start: Date; end: Date; }
 interface DutyEvent extends BigCalendarEvent {
@@ -39,8 +36,8 @@ const CalendarManager = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [currentView, setCurrentView] = useState<View>('month');
 
-  const dutiesRef = userProfile?.role === 'pharmacist' && userProfile.pharmacyId 
-    ? collection(db, "pharmacies", userProfile.pharmacyId, "duties") 
+  const dutiesRef = userProfile?.role === 'pharmacist'
+    ? collection(db, "pharmacies", userProfile.uid, "duties") 
     : null;
 
   const fetchEvents = useCallback(async () => {
@@ -142,7 +139,7 @@ const CalendarManager = () => {
                 <Modal.Title>{t('delete_duty_title')}</Modal.Title>
             </Modal.Header>
             <Modal.Body>
-                {selectedEvent && <p>{t('delete_duty_body', { start: format(selectedEvent.start, 'dd/MM/yyyy HH:mm'), end: format(selectedEvent.end, 'dd/MM/yyyy HH:mm') })}</p>}
+                {selectedEvent && selectedEvent.start && selectedEvent.end && <p>{t('delete_duty_body', { start: format(selectedEvent.start, 'dd/MM/yyyy HH:mm'), end: format(selectedEvent.end, 'dd/MM/yyyy HH:mm') })}</p>}
             </Modal.Body>
             <Modal.Footer>
                 <Button variant="secondary" onClick={() => setShowDeleteModal(false)}>{t('cancel_button')}</Button>

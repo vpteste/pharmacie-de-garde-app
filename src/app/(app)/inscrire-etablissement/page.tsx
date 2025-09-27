@@ -20,25 +20,25 @@ const RegisterPage = () => {
 
     const router = useRouter();
 
-    const handleRegister = async (e: React.FormEvent) => {
+    const handleRegister = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        setError(null);
         setLoading(true);
+        setError(null);
+
+        const formData = {
+            email: e.currentTarget.email.value,
+            password: e.currentTarget.password.value,
+            name: e.currentTarget.pharmacyName.value,
+            address: e.currentTarget.address.value,
+            phone: e.currentTarget.phone.value,
+            role: 'pharmacist'
+        };
 
         try {
             const response = await fetch('/api/auth/register', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    email,
-                    password,
-                    role: 'pharmacist',
-                    name: pharmacyName,
-                    address,
-                    phone,
-                }),
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(formData)
             });
 
             const data = await response.json();
@@ -47,14 +47,15 @@ const RegisterPage = () => {
                 throw new Error(data.error || t('register_error'));
             }
 
-            setShowSuccessToast(true);
-            setTimeout(() => {
-                router.push('/pro/login'); // Redirect to login after showing toast
-            }, 2000); // Show toast for 2 seconds
+            router.push('/pro/login?status=success');
 
-        } catch (err: any) {
-            console.error("Registration error:", err);
-            setError(err.message || t('register_error'));
+        } catch (err) {
+            if (err instanceof Error) {
+                setError(err.message);
+            } else {
+                setError(t('register_error'));
+            }
+        } finally {
             setLoading(false);
         }
     };

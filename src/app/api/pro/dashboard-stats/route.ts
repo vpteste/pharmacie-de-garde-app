@@ -1,18 +1,14 @@
 import { NextResponse } from 'next/server';
-import { headers } from 'next/headers';
 import { authAdmin, firestoreAdmin } from '@/lib/firebase-admin';
 import { Timestamp } from 'firebase-admin/firestore';
 
-// Helper function to format the next duty date
 const formatNextDuty = (nextDutyDate: Date): string => {
     const now = new Date();
     now.setHours(0, 0, 0, 0);
     const dutyDate = new Date(nextDutyDate);
     dutyDate.setHours(0, 0, 0, 0);
-
     const diffTime = dutyDate.getTime() - now.getTime();
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-
     if (diffDays === 0) return "Aujourd'hui";
     if (diffDays === 1) return "Demain";
     if (diffDays > 1 && diffDays <= 7) return `Dans ${diffDays} jours`;
@@ -21,9 +17,7 @@ const formatNextDuty = (nextDutyDate: Date): string => {
 
 export async function GET(request: Request) {
   try {
-    // 1. Authentication and Profile Fetching
-    const headersList = headers();
-    const authorization = headersList.get('Authorization');
+    const authorization = request.headers.get('Authorization');
     if (!authorization?.startsWith('Bearer ')) {
       return new NextResponse('Unauthorized: No token provided', { status: 401 });
     }
@@ -37,15 +31,38 @@ export async function GET(request: Request) {
     }
     const pharmacyId = userDoc.data()?.pharmacyId;
 
-    // --- Parallel Data Fetching --- 
+    const getMonthlyHours = async () => {
+        const now = new Date();
+        const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+        const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59, 999);
+        const dutiesSnapshot = await firestoreAdmin.collection('pharmacies').doc(pharmacyId).collection('duties')
+            .where('start', '>=', Timestamp.fromDate(startOfMonth))
+            .where('start', '<=', Timestamp.fromDate(endOfMonth))
+            .get();
+        if (dutiesSnapshot.empty) return 0;
+        let totalMilliseconds = 0;
+        dutiesSnapshot.forEach(doc => {
+            const duty = doc.data();
+            totalMilliseconds += duty.end.toMillis() - duty.start.toMillis();
+        });
+        return Math.round(totalMilliseconds / (1000 * 60 * 60));
+    };
 
-    const getMonthlyHours = async () => { /* ... as before */ };
-    const getNextDuty = async () => { /* ... as before */ };
+    const getNextDuty = async () => {
+        const now = new Date();
+        const nextDutySnapshot = await firestoreAdmin.collection('pharmacies').doc(pharmacyId).collection('duties')
+            .where('start', '>=', Timestamp.fromDate(now))
+            .orderBy('start', 'asc')
+            .limit(1)
+            .get();
+        if (nextDutySnapshot.empty) return "Aucune programmée";
+        const nextDuty = nextDutySnapshot.docs[0].data();
+        return formatNextDuty(nextDuty.start.toDate());
+    };
 
     const getMedsAlertCount = async () => {
         const inventorySnapshot = await firestoreAdmin.collection('pharmacies').doc(pharmacyId).collection('inventory').get();
         if (inventorySnapshot.empty) return 0;
-
         let alertCount = 0;
         inventorySnapshot.forEach(doc => {
             const item = doc.data();
@@ -56,19 +73,17 @@ export async function GET(request: Request) {
         return alertCount;
     };
 
-    // Run queries in parallel
     const [monthlyHours, nextDuty, medsAlertCount] = await Promise.all([
         getMonthlyHours(),
         getNextDuty(),
         getMedsAlertCount()
     ]);
 
-    // Return combined response
     return NextResponse.json({ monthlyHours, nextDuty, medsAlertCount });
 
   } catch (error) {
     console.error('Error fetching dashboard stats:', error);
-    if (error instanceof Error && (error.message.includes('token') || error.message.includes('expired'))) {
+    if (error instanceof Error && (error.message.includes('token'))) {
         return new NextResponse('Unauthorized: Invalid token', { status: 401 });
     }
     return new NextResponse('Internal Server Error', { status: 500 });

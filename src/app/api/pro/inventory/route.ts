@@ -2,6 +2,14 @@ import { NextResponse } from 'next/server';
 import { firestoreAdmin, authAdmin } from '@/lib/firebase-admin';
 import { FieldValue } from 'firebase-admin/firestore';
 
+interface InventoryData {
+    name: string;
+    price: number;
+    stock: number;
+    updatedAt: FieldValue;
+    threshold?: number;
+}
+
 // GET handler to fetch the current inventory for a pharmacist
 export async function GET(request: Request) {
     try {
@@ -102,10 +110,10 @@ export async function POST(request: Request) {
 
         const inventoryDocRef = firestoreAdmin.collection('pharmacies').doc(pharmacyId).collection('inventory').doc(medicationId);
         
-        const dataToSet: any = {
+        const dataToSet: Partial<InventoryData> = {
             name: medicationName,
             price: parseFloat(price),
-            stock: parseInt(stock, 10), // Use numerical stock
+            stock: parseInt(stock, 10),
             updatedAt: FieldValue.serverTimestamp(),
         };
 

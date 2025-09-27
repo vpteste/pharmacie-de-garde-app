@@ -26,10 +26,16 @@ const MonComptePage = () => {
     };
 
     const handleToggleFavorite = async (pharmacyId: string) => {
-        if (!userProfile || !firebaseUser || !setUserProfile) return;
+        if (!userProfile || userProfile.role !== 'user' || !firebaseUser || !setUserProfile) return;
+
         const originalProfile = userProfile;
-        const updatedFavorites = originalProfile.favoritePharmacies?.filter(id => id !== pharmacyId) || [];
+        const isFavorite = originalProfile.favoritePharmacies?.includes(pharmacyId);
+        const updatedFavorites = isFavorite
+            ? originalProfile.favoritePharmacies?.filter(id => id !== pharmacyId)
+            : [...(originalProfile.favoritePharmacies || []), pharmacyId];
+
         setUserProfile({ ...originalProfile, favoritePharmacies: updatedFavorites });
+
         try {
             const token = await firebaseUser.getIdToken();
             await fetch('/api/user/favorites', {
@@ -37,19 +43,23 @@ const MonComptePage = () => {
                 headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
                 body: JSON.stringify({ pharmacyId })
             });
-        } catch (error) {
+        } catch (err) {
+            console.error("Failed to update favorite:", err);
             setUserProfile(originalProfile);
         }
     };
 
     const handleToggleTrack = async (medicationId: string) => {
-        if (!userProfile || !firebaseUser || !setUserProfile) return;
+        if (!userProfile || userProfile.role !== 'user' || !firebaseUser || !setUserProfile) return;
+
         const originalProfile = userProfile;
         const isTracked = originalProfile.trackedMedications?.includes(medicationId);
         const updatedTracked = isTracked
             ? originalProfile.trackedMedications?.filter(id => id !== medicationId)
             : [...(originalProfile.trackedMedications || []), medicationId];
+
         setUserProfile({ ...originalProfile, trackedMedications: updatedTracked });
+
         try {
             const token = await firebaseUser.getIdToken();
             const method = isTracked ? 'DELETE' : 'POST';
@@ -59,7 +69,8 @@ const MonComptePage = () => {
                 headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
                 body: isTracked ? undefined : JSON.stringify({ medicationId })
             });
-        } catch (error) {
+        } catch (err) {
+            console.error("Failed to update tracked medication:", err);
             setUserProfile(originalProfile);
         }
     };

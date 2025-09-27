@@ -1,10 +1,10 @@
 import React from 'react';
 import { Button, ButtonGroup } from 'react-bootstrap';
-import { ToolbarProps } from 'react-big-calendar';
+import { ToolbarProps, Event, View } from 'react-big-calendar';
 import { BsChevronLeft, BsChevronRight } from 'react-icons/bs';
 import { useTranslation } from 'react-i18next';
 
-const CalendarToolbar: React.FC<ToolbarProps> = ({ label, view, views, onNavigate, onView }) => {
+const CalendarToolbar = <TEvent extends Event>({ label, view, views, onNavigate, onView }: ToolbarProps<TEvent>) => {
     const { t } = useTranslation();
 
     const viewNames: { [key: string]: string } = {
@@ -36,7 +36,7 @@ const CalendarToolbar: React.FC<ToolbarProps> = ({ label, view, views, onNavigat
                         <Button
                             key={viewName}
                             variant={view === viewName ? 'primary' : 'light'}
-                            onClick={() => onView(viewName)}
+                            onClick={() => onView(viewName as View)}
                         >
                             {viewNames[viewName]}
                         </Button>

@@ -1,6 +1,19 @@
 import { NextResponse } from 'next/server';
 import { firestoreAdmin } from '@/lib/firebase-admin';
 
+// Define a clear type for the items in our inventory sub-collection
+interface InventoryItem {
+    name: string;
+    price: number;
+    stock: number;
+    threshold?: number;
+}
+
+// Type for the item when enriched with its pharmacyId
+interface InventoryItemWithPharmacyId extends InventoryItem {
+    pharmacyId: string;
+}
+
 // This API route performs a public search for medications across all pharmacy inventories.
 export async function GET(request: Request) {
     try {
@@ -11,7 +24,6 @@ export async function GET(request: Request) {
             return NextResponse.json({ results: [] });
         }
 
-        // 1. Query all inventory items that match the search term
         const inventoryQuerySnapshot = await firestoreAdmin
             .collectionGroup('inventory')
             .where('name', '>=', term)
@@ -22,12 +34,11 @@ export async function GET(request: Request) {
             return NextResponse.json({ results: [] });
         }
 
-        // 2. Group inventory items by medication ID and collect pharmacy IDs
-        const medicationPharmacyMap = new Map<string, any[]>();
+        const medicationPharmacyMap = new Map<string, InventoryItemWithPharmacyId[]>();
         inventoryQuerySnapshot.docs.forEach(doc => {
-            const item = doc.data();
+            const item = doc.data() as InventoryItem;
             const medicationId = doc.id;
-            const pharmacyId = doc.ref.parent.parent!.id; // Get the pharmacy doc ID
+            const pharmacyId = doc.ref.parent.parent!.id;
 
             if (!medicationPharmacyMap.has(medicationId)) {
                 medicationPharmacyMap.set(medicationId, []);
@@ -38,28 +49,26 @@ export async function GET(request: Request) {
             });
         });
 
-        // 3. Fetch pharmacy details for all unique pharmacies found
         const allPharmacyIds = [...new Set(inventoryQuerySnapshot.docs.map(doc => doc.ref.parent.parent!.id))];
         const pharmacyDocs = await firestoreAdmin.getAll(...allPharmacyIds.map(id => firestoreAdmin.collection('pharmacies').doc(id)));
         
-        const pharmacyDetailsMap = new Map<string, any>();
+        const pharmacyDetailsMap = new Map<string, { name: string }>();
         pharmacyDocs.forEach(doc => {
             if(doc.exists) {
                 pharmacyDetailsMap.set(doc.id, { name: doc.data()!.name });
             }
         });
 
-        // 4. Construct the final response
         const results = Array.from(medicationPharmacyMap.entries()).map(([medicationId, items]) => {
             return {
                 medicationId: medicationId,
-                medicationName: items[0].name, // All items will have the same name
+                medicationName: items[0].name,
                 pharmacies: items.map(item => ({
                     pharmacyId: item.pharmacyId,
                     pharmacyName: pharmacyDetailsMap.get(item.pharmacyId)?.name || 'Unknown Pharmacy',
                     price: item.price,
-                    stockLevel: item.stockLevel,
-                })).sort((a, b) => a.price - b.price), // Sort by price ascending
+                    stock: item.stock,
+                })).sort((a, b) => a.price - b.price),
             };
         });
 

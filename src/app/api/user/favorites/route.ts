@@ -46,7 +46,7 @@ export async function POST(request: Request) {
 
     } catch (error) {
         console.error('Error in /api/user/favorites:', error);
-        if (error.code === 'auth/id-token-expired') {
+        if (typeof error === 'object' && error !== null && 'code' in error && error.code === 'auth/id-token-expired') {
             return new NextResponse('Token expired', { status: 401 });
         }
         return new NextResponse('Internal Server Error', { status: 500 });

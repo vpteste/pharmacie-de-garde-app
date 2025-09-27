@@ -1,5 +1,6 @@
 'use client';
-import React, { useState, useEffect } from 'react';
+
+import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Container, Row, Col, Card, Form, Button, Spinner, Alert } from 'react-bootstrap';
 import { useAuth } from '@/app/components/providers/AuthContext';
@@ -7,16 +8,14 @@ import Link from 'next/link';
 import { useTranslation } from 'react-i18next';
 import './Login.css';
 
-const LoginPage = () => {
+const ProLoginPage = () => {
     const { t } = useTranslation();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
-    const { login, userProfile } = useAuth();
+    const { login, logout } = useAuth();
     const router = useRouter();
-
-
 
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -29,24 +28,25 @@ const LoginPage = () => {
             if (profile.role === 'pharmacist') {
                 router.push('/pro/dashboard');
             } else {
-                // Not a pharmacist, deny access.
                 setError(t('pro_login_access_denied'));
-                await logout(); // Log the user out as they don't belong here.
+                await logout();
                 setLoading(false);
             }
 
-        } catch (err: any) {
+        } catch (err) {
             console.error("Login error:", err);
-            if (err.code === 'auth/user-not-found' || err.code === 'auth/wrong-password' || err.message.includes("User profile not found")) {
-                setError(t('invalid_credentials_error'));
-            } else if (err.code === 'auth/invalid-email') {
-                setError(t('invalid_email_error'));
-            } else {
-                setError(t('login_error'));
+            let errorMessage = t('login_error');
+            if (err instanceof Error) {
+                // Firebase errors have a 'code' property, but it's not standard on Error
+                if ('code' in err && (err.code === 'auth/user-not-found' || err.code === 'auth/wrong-password' || err.code === 'auth/invalid-credential')) {
+                    errorMessage = t('invalid_credentials_error');
+                } else if ('code' in err && err.code === 'auth/invalid-email') {
+                    errorMessage = t('invalid_email_error');
+                }
             }
+            setError(errorMessage);
             setLoading(false);
         }
-        // Do not set loading to false here on success, as the page will be redirecting
     };
 
     return (
@@ -106,4 +106,4 @@ const LoginPage = () => {
     );
 };
 
-export default LoginPage;
+export default ProLoginPage;

@@ -79,22 +79,28 @@ export async function POST(request: Request) {
 
       return NextResponse.json({ uid, role }, { status: 201 });
 
-    } catch (firestoreError: any) {
+    } catch (firestoreError) {
         await authAdmin.deleteUser(uid);
         throw firestoreError;
     }
 
-  } catch (error: any) {
+  } catch (error) {
     console.error('REGISTRATION_ERROR:', error);
-    let errorMessage = error.message || 'An unexpected error occurred.';
+    let errorMessage = 'An unexpected error occurred during registration.';
     let statusCode = 500;
 
-    if (error.code === 'auth/email-already-exists') {
-      errorMessage = 'This email address is already in use.';
-      statusCode = 409;
-    } else if (error.code === 'auth/invalid-password') {
-      errorMessage = 'The password must be at least 6 characters long.';
-      statusCode = 400;
+    if (typeof error === 'object' && error !== null && 'code' in error) {
+        const firebaseError = error as { code: string };
+        // Provide more specific error messages for common Firebase admin errors
+        if (firebaseError.code === 'auth/email-already-exists') {
+          errorMessage = 'This email address is already in use.';
+          statusCode = 409; // Conflict
+        } else if (firebaseError.code === 'auth/invalid-password') {
+          errorMessage = 'The password must be at least 6 characters long.';
+          statusCode = 400;
+        }
+    } else if (error instanceof Error) {
+        errorMessage = error.message;
     }
 
     return NextResponse.json({ error: errorMessage }, { status: statusCode });

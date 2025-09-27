@@ -43,9 +43,11 @@ export async function POST(request: Request) {
 
         return NextResponse.json({ success: true, id: docRef.id, ...newDuty });
 
-    } catch (error: any) {
-        if (error.message === 'UNAUTHORIZED') return new NextResponse('Unauthorized', { status: 401 });
-        if (error.message.startsWith('FORBIDDEN')) return new NextResponse('Forbidden', { status: 403 });
+    } catch (error) {
+        if (error instanceof Error) {
+            if (error.message === 'UNAUTHORIZED') return new NextResponse('Unauthorized', { status: 401 });
+            if (error.message.startsWith('FORBIDDEN')) return new NextResponse('Forbidden', { status: 403 });
+        }
         console.error('Error in POST /api/pro/duties:', error);
         return new NextResponse('Internal Server Error', { status: 500 });
     }
@@ -64,7 +66,6 @@ export async function DELETE(request: Request) {
 
         const dutyRef = firestoreAdmin.collection('pharmacies').doc(pharmacyId).collection('duties').doc(dutyId);
         
-        // Optional: Check if doc exists before deleting
         const doc = await dutyRef.get();
         if (!doc.exists) {
             return new NextResponse('Not Found', { status: 404 });
@@ -74,9 +75,11 @@ export async function DELETE(request: Request) {
 
         return NextResponse.json({ success: true, message: `Duty ${dutyId} deleted.` });
 
-    } catch (error: any) {
-        if (error.message === 'UNAUTHORIZED') return new NextResponse('Unauthorized', { status: 401 });
-        if (error.message.startsWith('FORBIDDEN')) return new NextResponse('Forbidden', { status: 403 });
+    } catch (error) {
+        if (error instanceof Error) {
+            if (error.message === 'UNAUTHORIZED') return new NextResponse('Unauthorized', { status: 401 });
+            if (error.message.startsWith('FORBIDDEN')) return new NextResponse('Forbidden', { status: 403 });
+        }
         console.error('Error in DELETE /api/pro/duties:', error);
         return new NextResponse('Internal Server Error', { status: 500 });
     }

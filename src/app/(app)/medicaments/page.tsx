@@ -12,7 +12,7 @@ interface PharmacyResult {
     pharmacyId: string;
     pharmacyName: string;
     price: number;
-    stockLevel: 'IN_STOCK' | 'LOW_STOCK' | 'OUT_OF_STOCK';
+    stock: number;
 }
 
 interface MedicationSearchResult {
@@ -22,15 +22,19 @@ interface MedicationSearchResult {
 }
 
 // --- Components ---
-const StockBadge = ({ stockLevel }: { stockLevel: PharmacyResult['stockLevel'] }) => {
+const StockBadge = ({ stock }: { stock: number }) => {
     const { t } = useTranslation();
-    const variants = {
-        IN_STOCK: { bg: 'success', label: t('stock_in_stock') },
-        LOW_STOCK: { bg: 'warning', label: t('stock_low_stock') },
-        OUT_OF_STOCK: { bg: 'danger', label: t('stock_out_of_stock') },
-    };
-    const variant = variants[stockLevel] || { bg: 'secondary', label: stockLevel };
-    return <Badge bg={variant.bg}>{variant.label}</Badge>;
+    let bg: string;
+    let label: string;
+
+    if (stock > 0) {
+        bg = 'success';
+        label = t('stock_in_stock');
+    } else {
+        bg = 'danger';
+        label = t('stock_out_of_stock');
+    }
+    return <Badge bg={bg}>{label}</Badge>;
 };
 
 const MedsPage = () => {
@@ -66,9 +70,8 @@ const MedsPage = () => {
     }, [debouncedSearchTerm]);
 
     const handleToggleTrack = async (medicationId: string) => {
-        if (!userProfile || !firebaseUser) {
-            // Consider redirecting to login page
-            return;
+        if (!userProfile || userProfile.role !== 'user' || !firebaseUser) {
+            return; // Only standard users can track medications.
         }
 
         const originalProfile = userProfile;
@@ -77,10 +80,7 @@ const MedsPage = () => {
             ? originalProfile.trackedMedications?.filter(id => id !== medicationId)
             : [...(originalProfile.trackedMedications || []), medicationId];
 
-        // Optimistic update
-        if(setUserProfile) {
-            setUserProfile({ ...originalProfile, trackedMedications: updatedTracked });
-        }
+        setUserProfile({ ...originalProfile, trackedMedications: updatedTracked });
 
         try {
             const token = await firebaseUser.getIdToken();
@@ -89,17 +89,14 @@ const MedsPage = () => {
             
             const response = await fetch(url, {
                 method: method,
-                headers: { 
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
                 body: isTracked ? undefined : JSON.stringify({ medicationId })
             });
 
             if (!response.ok) throw new Error('API call failed');
 
         } catch (error) {
-            if(setUserProfile) setUserProfile(originalProfile); // Revert on failure
+            setUserProfile(originalProfile); // Revert on failure
             console.error("Failed to update tracked medications:", error);
         }
     };
@@ -117,7 +114,7 @@ const MedsPage = () => {
                         <div className="search-bar">
                             <Form.Control
                                 type="search"
-                                placeholder={t('meds_search_placeholder')}
+                                placeholder={t('meds_search_placeholder') ?? ''}
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
                                 size="lg"
@@ -132,20 +129,21 @@ const MedsPage = () => {
                     ) : results.length > 0 ? (
                         <Accordion alwaysOpen>
                             {results.map((med, index) => {
-                                const isTracked = userProfile?.trackedMedications?.includes(med.medicationId);
+                                const isTracked = userProfile?.role === 'user' && userProfile.trackedMedications?.includes(med.medicationId);
                                 return (
                                     <Accordion.Item eventKey={String(index)} key={med.medicationId}>
                                         <Accordion.Header>
                                             <div className="d-flex justify-content-between w-100 align-items-center pe-2">
                                                 <span>{med.medicationName}</span>
-                                                <Button 
-                                                    size="sm" 
-                                                    variant={isTracked ? 'primary' : 'outline-primary'}
-                                                    onClick={(e) => { e.stopPropagation(); handleToggleTrack(med.medicationId); }}
-                                                    disabled={!userProfile}
-                                                >
-                                                    {isTracked ? t('untrack_medication_button') : t('track_medication_button')}
-                                                </Button>
+                                                {userProfile?.role === 'user' &&
+                                                    <Button 
+                                                        size="sm" 
+                                                        variant={isTracked ? 'primary' : 'outline-primary'}
+                                                        onClick={(e) => { e.stopPropagation(); handleToggleTrack(med.medicationId); }}
+                                                    >
+                                                        {isTracked ? t('untrack_medication_button') : t('track_medication_button')}
+                                                    </Button>
+                                                }
                                             </div>
                                         </Accordion.Header>
                                         <Accordion.Body>
@@ -162,7 +160,7 @@ const MedsPage = () => {
                                                         <tr key={p.pharmacyId}>
                                                             <td>{p.pharmacyName}</td>
                                                             <td>{p.price.toFixed(2)} €</td>
-                                                            <td><StockBadge stockLevel={p.stockLevel} /></td>
+                                                            <td><StockBadge stock={p.stock} /></td>
                                                         </tr>
                                                     ))}
                                                 </tbody>
