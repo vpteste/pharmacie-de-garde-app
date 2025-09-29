@@ -2,12 +2,32 @@ import { NextResponse } from 'next/server';
 import * as cheerio from 'cheerio';
 import admin from 'firebase-admin';
 import { GeoPoint } from 'firebase-admin/firestore';
-import { initFirebaseAdmin } from '@/lib/firebase-admin'; // Assurez-vous que ce chemin est correct
+
+// Helper function for Firebase Admin initialization
+function initializeFirebaseAdmin() {
+    if (admin.apps.length > 0) {
+        return;
+    }
+    try {
+        const serviceAccountJson = process.env.FIREBASE_SERVICE_ACCOUNT_JSON;
+        if (!serviceAccountJson) {
+            throw new Error("FIREBASE_SERVICE_ACCOUNT_JSON is not set in environment variables.");
+        }
+        const serviceAccount = JSON.parse(serviceAccountJson);
+        admin.initializeApp({
+            credential: admin.credential.cert(serviceAccount)
+        });
+        console.log("Firebase Admin SDK initialized successfully.");
+    } catch (error) {
+        console.error("Firebase Admin SDK initialization failed:", error);
+        throw new Error("Could not initialize Firebase Admin SDK.");
+    }
+}
 
 // --- Logique du Script (adaptée pour une Route API) ---
 
 async function runPopulationScript() {
-    await initFirebaseAdmin();
+    initializeFirebaseAdmin();
     const firestoreAdmin = admin.firestore();
 
     const BASE_URL = 'https://www.pharmacies-de-garde.ci';
@@ -121,7 +141,7 @@ async function runPopulationScript() {
     return { success: true, message: `${pharmaciesData.length} pharmacies processed.` };
 }
 
-export async function GET(request: Request) {
+export async function GET() {
   console.log("\n--- VERCEL POPULATE API TRIGGERED ---");
   try {
     const result = await runPopulationScript();
