@@ -55,7 +55,7 @@ export async function GET(request: Request) {
         const openingHours = docSnap.data()?.openingHours || {};
         return NextResponse.json({ openingHours });
 
-    } catch (error) {
+    } catch (error: unknown) {
         if (error instanceof Error) {
             if (error.message.startsWith('UNAUTHORIZED')) return new NextResponse('Unauthorized', { status: 401 });
             if (error.message.startsWith('FORBIDDEN')) return new NextResponse('Forbidden', { status: 403 });
@@ -80,7 +80,7 @@ export async function POST(request: Request) {
 
         return NextResponse.json({ success: true, message: 'Opening hours updated successfully.' });
 
-    } catch (error) {
+    } catch (error: unknown) {
         if (error instanceof Error) {
             if (error.message.startsWith('UNAUTHORIZED')) return new NextResponse('Unauthorized', { status: 401 });
             if (error.message.startsWith('FORBIDDEN')) return new NextResponse('Forbidden', { status: 403 });

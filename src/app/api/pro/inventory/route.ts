@@ -62,8 +62,8 @@ export async function GET(request: Request) {
         const inventory = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
         return NextResponse.json({ inventory });
 
-    } catch (error) {
-        console.error('Error in GET /api/pro/inventory:', error);
+    } catch {
+        console.error('Error in GET /api/pro/inventory:');
         return new NextResponse('Internal Server Error', { status: 500 });
     }
 }
@@ -102,8 +102,8 @@ export async function DELETE(request: Request) {
 
         return NextResponse.json({ success: true, message: `Medication ${medicationId} deleted.` });
 
-    } catch (error) {
-        console.error('Error in DELETE /api/pro/inventory:', error);
+    } catch {
+        console.error('Error in DELETE /api/pro/inventory:');
         return new NextResponse('Internal Server Error', { status: 500 });
     }
 }
@@ -153,8 +153,8 @@ export async function POST(request: Request) {
 
         return NextResponse.json({ success: true, message: `Inventory updated for ${medicationName}` });
 
-    } catch (error) {
-        console.error('Error in POST /api/pro/inventory:', error);
+    } catch {
+        console.error('Error in POST /api/pro/inventory:');
         return new NextResponse('Internal Server Error', { status: 500 });
     }
 }

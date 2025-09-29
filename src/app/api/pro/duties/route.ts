@@ -65,7 +65,7 @@ export async function POST(request: Request) {
 
         return NextResponse.json({ success: true, id: docRef.id, ...newDuty });
 
-    } catch (error) {
+    } catch (error: unknown) {
         if (error instanceof Error) {
             if (error.message === 'UNAUTHORIZED') return new NextResponse('Unauthorized', { status: 401 });
             if (error.message.startsWith('FORBIDDEN')) return new NextResponse('Forbidden', { status: 403 });
@@ -97,7 +97,7 @@ export async function DELETE(request: Request) {
 
         return NextResponse.json({ success: true, message: `Duty ${dutyId} deleted.` });
 
-    } catch (error) {
+    } catch (error: unknown) {
         if (error instanceof Error) {
             if (error.message === 'UNAUTHORIZED') return new NextResponse('Unauthorized', { status: 401 });
             if (error.message.startsWith('FORBIDDEN')) return new NextResponse('Forbidden', { status: 403 });

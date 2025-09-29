@@ -103,11 +103,11 @@ export async function GET(request: Request) {
 
     return NextResponse.json({ monthlyHours, nextDuty, medsAlertCount });
 
-  } catch (error) {
-    console.error('Error fetching dashboard stats:', error);
+  } catch (error: unknown) {
     if (error instanceof Error && (error.message.includes('token'))) {
         return new NextResponse('Unauthorized: Invalid token', { status: 401 });
     }
+    console.error('Error fetching dashboard stats:', error);
     return new NextResponse('Internal Server Error', { status: 500 });
   }
 }

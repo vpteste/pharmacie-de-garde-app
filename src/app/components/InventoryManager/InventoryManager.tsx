@@ -6,12 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/app/components/providers/AuthContext';
 // import { useDebounce } from '@/hooks/useDebounce'; // No longer needed
 
-// Types
-interface Medication {
-    id: string;
-    name: string;
-    description: string;
-}
+
 
 interface InventoryItem {
     id: string;
