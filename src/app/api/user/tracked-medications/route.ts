@@ -21,7 +21,7 @@ function initializeFirebaseAdmin() {
     return admin;
 }
 
-async function updateUserTrackedMedications(uid: string, medicationId: string, action: 'TRACK' | 'UNTRACK') {
+async function updateUserTrackedMedications(firestoreAdmin: admin.firestore.Firestore, uid: string, medicationId: string, action: 'TRACK' | 'UNTRACK') {
     const userDocRef = firestoreAdmin.collection('users').doc(uid);
     const userDoc = await userDocRef.get();
 
@@ -64,7 +64,7 @@ async function handleRequest(request: Request, action: 'TRACK' | 'UNTRACK') {
             return new NextResponse('Bad Request: medicationId is required', { status: 400 });
         }
 
-        await updateUserTrackedMedications(uid, medicationId, action);
+        await updateUserTrackedMedications(firestoreAdmin, uid, medicationId, action);
 
         return new NextResponse(JSON.stringify({ success: true }), { status: 200 });
 

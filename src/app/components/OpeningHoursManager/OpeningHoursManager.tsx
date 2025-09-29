@@ -47,7 +47,7 @@ const OpeningHoursManager = () => {
             if (data.openingHours && Object.keys(data.openingHours).length > 0) {
                 setHours(data.openingHours);
             }
-        } catch (err) {
+        } catch {
             setError("Erreur lors de la récupération des horaires.");
         } finally {
             setIsLoading(false);

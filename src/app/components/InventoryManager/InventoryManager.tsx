@@ -46,7 +46,7 @@ const InventoryManager = () => {
 
     // Form state
     const [searchTerm, setSearchTerm] = useState('');
-    const [selectedMedication, setSelectedMedication] = useState<Medication | null>({ id: 'temp', name: 'temp', description: 'temp'}); // Simplified
+    
     const [price, setPrice] = useState('');
     const [stock, setStock] = useState('');
     const [threshold, setThreshold] = useState('');
@@ -65,7 +65,7 @@ const InventoryManager = () => {
             if (!response.ok) throw new Error('Failed to fetch inventory');
             const data = await response.json();
             setInventory(data.inventory);
-        } catch (_err) {
+        } catch {
             setError(t('error_fetching_inventory'));
         } finally {
             setIsLoadingInventory(false);
@@ -78,7 +78,6 @@ const InventoryManager = () => {
 
     const resetForm = () => {
         setSearchTerm('');
-        setSelectedMedication(null);
         setPrice('');
         setStock('');
         setThreshold('');
@@ -110,7 +109,7 @@ const InventoryManager = () => {
             resetForm();
             await fetchInventory();
 
-        } catch (_error) {
+        } catch {
             setError(t('error_adding_inventory'));
         } finally {
             setIsSubmitting(false);
@@ -127,7 +126,7 @@ const InventoryManager = () => {
                 headers: { 'Authorization': `Bearer ${token}` },
             });
             await fetchInventory();
-        } catch (_error) {
+        } catch {
             setError(t('error_deleting_inventory'));
         }
     };
