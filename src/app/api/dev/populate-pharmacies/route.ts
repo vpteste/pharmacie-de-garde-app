@@ -126,8 +126,11 @@ export async function GET(request: Request) {
   try {
     const result = await runPopulationScript();
     return NextResponse.json(result);
-  } catch (error: any) {
-    console.error("\n--- A critical error occurred during Vercel API route execution: ---", error.message);
-    return NextResponse.json({ success: false, message: error.message, stack: error.stack }, { status: 500 });
+  } catch (error: unknown) {
+    console.error("\n--- A critical error occurred during Vercel API route execution: ---");
+    if (error instanceof Error) {
+        return NextResponse.json({ success: false, message: error.message, stack: error.stack }, { status: 500 });
+    }
+    return NextResponse.json({ success: false, message: "An unknown error occurred" }, { status: 500 });
   }
 }
