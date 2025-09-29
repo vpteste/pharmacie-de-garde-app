@@ -1,10 +1,11 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { GoogleMap, OverlayView, InfoWindow } from '@react-google-maps/api';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
+import { GoogleMap, OverlayView, InfoWindow, DirectionsRenderer } from '@react-google-maps/api';
 import { useMap } from '@/app/components/providers/MapProvider';
 import { useTranslation } from 'react-i18next';
-import { Spinner, Badge } from 'react-bootstrap';
+import { Spinner, Badge, Button } from 'react-bootstrap';
+import { FaCrosshairs, FaRoute, FaPhone, FaCheckCircle } from 'react-icons/fa';
 import './Pharmacies.css';
 
 // --- Types ---
@@ -17,7 +18,7 @@ interface Pharmacy {
   phone: string;
   location: { _latitude: number; _longitude: number; };
   isOnDuty: boolean;
-  currentTraffic: 'Faible' | 'Modérée' | 'Élevée';
+  isOfficial?: boolean; // For the badge
   openingHours: WeekHours | null;
 }
 
@@ -56,7 +57,7 @@ const getOpenStatus = (pharmacy: Pharmacy, t: (key: string) => string) => {
 };
 
 // --- Components ---
-const CustomMarker = ({ pharmacy, onClick }: { pharmacy: Pharmacy, onClick: () => void }) => {
+const CustomMarker = ({ pharmacy }: { pharmacy: Pharmacy }) => {
   const getMarkerClassName = () => {
     let className = 'map-marker';
     if (pharmacy.isOnDuty) {
@@ -67,75 +68,158 @@ const CustomMarker = ({ pharmacy, onClick }: { pharmacy: Pharmacy, onClick: () =
     }
     return className;
   };
-  return <div className={getMarkerClassName()} onClick={onClick} />;
+  return <div className={getMarkerClassName()} />;
 };
+
+const UserMarker = () => <div className="user-marker"></div>;
 
 const getPixelPositionOffset = (width: number, height: number) => ({
     x: -(width / 2),
     y: -(height / 2),
 });
 
-const daysOfWeek = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
-
 export default function PharmaciesPage() {
     const { t } = useTranslation();
     const { isLoaded, loadError } = useMap();
+    const mapRef = useRef<google.maps.Map | null>(null);
+
     const [pharmacies, setPharmacies] = useState<Pharmacy[]>([]);
     const [selected, setSelected] = useState<Pharmacy | null>(null);
-    const [center, _setCenter] = useState({ lat: 5.36, lng: -4.0083 });
+    const [center, setCenter] = useState({ lat: 5.36, lng: -4.0083 }); // Default center
+    const [userPosition, setUserPosition] = useState<{ lat: number; lng: number } | null>(null);
+    const [loading, setLoading] = useState(true);
+    const [directions, setDirections] = useState<google.maps.DirectionsResult | null>(null);
 
-    useEffect(() => {
-        const fetchPharmacies = async () => {
-            try {
-                const response = await fetch('/api/pharmacies');
-                if (!response.ok) throw new Error('Failed to fetch pharmacies');
-                const data = await response.json();
-                setPharmacies(data.pharmacies);
-            } catch (error) { console.error(error); }
-        };
-        fetchPharmacies();
+    const fetchPharmacies = useCallback(async (lat: number, lng: number) => {
+        setLoading(true);
+        try {
+            const response = await fetch(`/api/pharmacies?lat=${lat}&lng=${lng}&radius=500000`); // 500km radius
+            if (!response.ok) throw new Error('Failed to fetch pharmacies');
+            const data = await response.json();
+            setPharmacies(data.pharmacies || []);
+        } catch (error) { 
+            console.error(error); 
+            setPharmacies([]);
+        } finally {
+            setLoading(false);
+        }
     }, []);
+
+    const handleGeolocate = useCallback(() => {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition((position) => {
+                const pos = { lat: position.coords.latitude, lng: position.coords.longitude };
+                setCenter(pos);
+                setUserPosition(pos);
+                mapRef.current?.panTo(pos);
+                mapRef.current?.setZoom(14);
+                fetchPharmacies(pos.lat, pos.lng);
+            }, () => { fetchPharmacies(center.lat, center.lng); });
+        } else { fetchPharmacies(center.lat, center.lng); }
+    }, [center.lat, center.lng, fetchPharmacies]);
+
+    useEffect(() => { handleGeolocate(); }, [handleGeolocate]);
+
+    const onMapLoad = useCallback((map: google.maps.Map) => { mapRef.current = map; }, []);
+
+    const onMapIdle = useCallback(() => {
+        if (mapRef.current) {
+            const newCenter = mapRef.current.getCenter()?.toJSON();
+            if (newCenter) { fetchPharmacies(newCenter.lat, newCenter.lng); }
+        }
+    }, [fetchPharmacies]);
+
+    const handleShowDirections = (pharmacy: Pharmacy) => {
+        if (!userPosition) return;
+
+        const directionsService = new google.maps.DirectionsService();
+        directionsService.route(
+            {
+                origin: userPosition,
+                destination: { lat: pharmacy.location._latitude, lng: pharmacy.location._longitude },
+                travelMode: google.maps.TravelMode.DRIVING,
+            },
+            (result, status) => {
+                if (status === google.maps.DirectionsStatus.OK && result) {
+                    setDirections(result);
+                    setSelected(null); // Close info window to show the route
+                } else {
+                    console.error(`error fetching directions ${result}`);
+                }
+            }
+        );
+    };
+
+    const handleMarkerClick = (pharmacy: Pharmacy) => {
+        setDirections(null); // Clear previous directions
+        setSelected(pharmacy);
+    }
 
     if (loadError) return <div>Error loading maps</div>;
     if (!isLoaded) return <div className="d-flex justify-content-center align-items-center vh-100"><Spinner animation="border" /></div>;
 
     return (
-        <div>
-            <GoogleMap mapContainerStyle={{ height: '100vh', width: '100%' }} center={center} zoom={12} options={{ disableDefaultUI: true, zoomControl: true }}>
+        <div className="pharmacy-map-container">
+            <GoogleMap 
+                mapContainerStyle={{ height: '100%', width: '100%' }} 
+                center={center} 
+                zoom={12} 
+                options={{ disableDefaultUI: true, zoomControl: true }}
+                onLoad={onMapLoad}
+                onIdle={onMapIdle}
+            >
                 {pharmacies.filter(p => p.location).map((pharmacy) => (
                     <OverlayView key={pharmacy.id} position={{ lat: pharmacy.location._latitude, lng: pharmacy.location._longitude }} mapPaneName={OverlayView.OVERLAY_MOUSE_TARGET} getPixelPositionOffset={() => getPixelPositionOffset(20, 20)}>
-                        <CustomMarker pharmacy={pharmacy} onClick={() => setSelected(pharmacy)} />
+                        <div onClick={() => handleMarkerClick(pharmacy)}>
+                            <CustomMarker pharmacy={pharmacy} />
+                        </div>
                     </OverlayView>
                 ))}
 
+                {userPosition && (
+                     <OverlayView position={userPosition} mapPaneName={OverlayView.OVERLAY_MOUSE_TARGET} getPixelPositionOffset={() => getPixelPositionOffset(24, 24)}>
+                        <UserMarker />
+                    </OverlayView>
+                )}
+
                 {selected && (
                     <InfoWindow position={{ lat: selected.location._latitude, lng: selected.location._longitude }} onCloseClick={() => setSelected(null)}>
-                        <div style={{ maxWidth: 280 }}>
-                            <h5>{selected.name}</h5>
-                            <p className="mb-1">{selected.address}</p>
-                            <p><strong>{selected.phone}</strong></p>
-                            <div className="d-flex justify-content-between align-items-center mb-2">
-                                <span>Statut:</span>
-                                <Badge bg={getOpenStatus(selected, t).color}>{getOpenStatus(selected, t).text}</Badge>
+                        <div className="info-window-content">
+                            <div className="iw-header">
+                                <h5>{selected.name}</h5>
+                                {selected.isOfficial && 
+                                    <span className="iw-badge" title="Établissement référencé">
+                                        <FaCheckCircle /> Référencée
+                                    </span>
+                                }
                             </div>
-                            <hr className="my-2"/>
-                            <h6>Horaires:</h6>
-                            <ul className="list-unstyled" style={{ fontSize: '0.8rem' }}>
-                                {selected.openingHours ? (
-                                    daysOfWeek.map(day => (
-                                        <li key={day} className="d-flex justify-content-between">
-                                            <span>{t(`day_${day}`)}:</span>
-                                            <strong>{selected.openingHours && selected.openingHours[day]?.isOpen ? `${selected.openingHours[day].open} - ${selected.openingHours[day].close}` : t('closed')}</strong>
-                                        </li>
-                                    ))
-                                ) : (
-                                    <li>{t('hours_not_available')}</li>
-                                )}
-                            </ul>
+                            <div className="iw-body">
+                                <p className="mb-1">{selected.address}</p>
+                                <div className="d-flex justify-content-between align-items-center mb-2">
+                                    <span>Statut:</span>
+                                    <Badge bg={getOpenStatus(selected, t).color}>{getOpenStatus(selected, t).text}</Badge>
+                                </div>
+                            </div>
+                            <div className="iw-actions">
+                                <button className="iw-button route" onClick={() => handleShowDirections(selected)}>
+                                    <FaRoute /> {t('directions_button') || 'Itinéraire'}
+                                </button>
+                                <a className="iw-button call" href={`tel:${selected.phone}`}>
+                                    <FaPhone /> {t('call_button') || 'Appeler'}
+                                </a>
+                            </div>
                         </div>
                     </InfoWindow>
                 )}
+
+                {directions && (
+                    <DirectionsRenderer directions={directions} />
+                )}
             </GoogleMap>
+            <Button variant="light" className="geolocate-btn" onClick={handleGeolocate} title={t('geolocate_button')}>
+                <FaCrosshairs />
+            </Button>
+            {loading && <div className="map-loading-overlay"><Spinner animation="border" variant="primary" /></div>}
         </div>
     );
 }

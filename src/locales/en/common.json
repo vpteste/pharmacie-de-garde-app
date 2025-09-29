@@ -46,6 +46,8 @@
   "nav_pro_area": "Pro Area",
   "nav_user_area": "User Area",
   "nav_my_account": "My Account",
+  "nav_more": "More",
+  "nav_more_options": "More options",
   "dashboard_title": "Professional Dashboard",
   "logout_button": "Logout",
   "user_space_title": "My Personal Area",
@@ -165,5 +167,7 @@
   "day_sunday": "Sunday",
   "hours_not_available": "Hours not available",
   "status_on_duty": "On Duty",
-  "status_hours_unavailable": "Hours unavailable"
+  "status_hours_unavailable": "Hours unavailable",
+  "directions_button": "Directions",
+  "call_button": "Call"
 }

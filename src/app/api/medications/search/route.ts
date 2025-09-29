@@ -1,9 +1,30 @@
 import { NextResponse } from 'next/server';
-import { firestoreAdmin } from '@/lib/firebase-admin';
+import admin from 'firebase-admin';
+
+// Helper function for Firebase Admin initialization
+function initializeFirebaseAdmin() {
+    if (admin.apps.length === 0) {
+        try {
+            const serviceAccountJson = process.env.FIREBASE_SERVICE_ACCOUNT_JSON;
+            if (!serviceAccountJson) {
+                throw new Error("FIREBASE_SERVICE_ACCOUNT_JSON is not set in environment variables.");
+            }
+            const serviceAccount = JSON.parse(serviceAccountJson);
+            admin.initializeApp({
+                credential: admin.credential.cert(serviceAccount)
+            });
+        } catch (error) {
+            // We don't throw here, to allow the function to return a proper error response
+        }
+    }
+    return admin;
+}
 
 // This API route searches the global medications collection.
 export async function GET(request: Request) {
     try {
+        initializeFirebaseAdmin();
+        const firestoreAdmin = admin.firestore();
         const { searchParams } = new URL(request.url);
         const term = searchParams.get('term');
 

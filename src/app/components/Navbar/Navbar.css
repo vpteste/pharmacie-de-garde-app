@@ -6,6 +6,7 @@
     --bubble-hover-bg: rgba(255, 255, 255, 0.8);
     --text-inactive: #5a5a5f;
     --text-active: #000000;
+    --text-on-active: #ffffff; /* White text on active (black) background */
     --green-glow: #3fc17a;
     --animation-speed: 0.6s;
     --animation-curve: cubic-bezier(0.25, 0.1, 0.25, 1);
@@ -18,6 +19,7 @@
     --bubble-hover-bg: rgba(255, 255, 255, 0.18);
     --text-inactive: #a1a1a6;
     --text-active: #ffffff;
+    --text-on-active: #000000; /* Black text on active (white) background */
 }
 
 /* === Main Navbar Container === */
@@ -38,6 +40,14 @@
     padding: 20px 0;
     z-index: 1020;
     transition: background var(--animation-speed) ease;
+}
+
+.navbar-main-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+    width: 100%;
 }
 
 .nav-links {
@@ -196,11 +206,107 @@
 
 .language-bubble.active {
     background: var(--text-active);
-    color: #1c1c1e;
+    color: var(--text-on-active);
     border-color: var(--text-active);
     transform: scale(1.05);
     box-shadow: 0 0 10px var(--text-active);
 }
+
+/* === Language Switcher & More Menu Structure === */
+.language-switcher {
+    gap: 5px; /* Reduced gap for popup */
+}
+
+.more-menu-title {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-inactive);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 0 5px 8px 5px;
+    margin: 0;
+    border-bottom: 1px solid var(--bubble-inactive-bg);
+    margin-bottom: 8px;
+}
+
+.language-options {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+}
+
+.desktop-language-switcher {
+    padding-bottom: 20px;
+}
+
+.nav-links-secondary {
+    position: relative; /* For popup positioning */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+    width: 100%;
+}
+
+.desktop-secondary-links {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+}
+
+.mobile-more-menu {
+    display: none; /* Hidden by default, shown on mobile */
+}
+
+.more-menu-popup {
+    position: absolute;
+    bottom: 85px;
+    right: 10px;
+    width: 250px;
+    background: var(--navbar-background);
+    backdrop-filter: blur(20px) saturate(180%);
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
+    z-index: 1030;
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    transform-origin: bottom right;
+}
+
+.more-menu-links {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.more-menu-link {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 12px;
+    border-radius: 12px;
+    text-decoration: none;
+    color: var(--text-active);
+    font-weight: 500;
+    font-size: 14px;
+    transition: background 0.2s ease, color 0.2s ease;
+}
+
+.more-menu-link:hover {
+    background: var(--bubble-hover-bg);
+}
+
+.more-menu-link svg {
+    font-size: 16px;
+    width: 20px;
+    text-align: center;
+    color: var(--text-inactive);
+}
+
 
 /* === Main Content Padding === */
 .main-content {
@@ -209,6 +315,19 @@
 }
 
 /* === Responsive Design for Mobile === */
+.desktop-nav {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    height: 100%;
+    width: 100%;
+}
+
+.mobile-nav {
+    display: none; /* Hidden by default, shown on mobile */
+}
+
 @media (max-width: 768px) {
     .liquid-navbar {
         width: 100vw;
@@ -221,33 +340,36 @@
         padding: 0 10px;
     }
 
-    .nav-links {
-        flex-direction: row;
+    /* Hide desktop nav and show mobile nav */
+    .desktop-nav {
+        display: none;
+    }
+    .mobile-nav {
+        display: flex;
         justify-content: space-around;
         align-items: center;
-        flex-grow: 1;
-        padding-top: 0;
-        gap: 5px;
+        width: 100%;
+        height: 100%;
     }
 
+    .mobile-more-menu {
+        display: block; /* Make the more button container visible */
+    }
+
+    /* General mobile bubble styling */
     .nav-bubble {
         width: 55px;
         height: 55px;
         border-radius: 18px;
     }
-
     .nav-icon {
         font-size: 20px;
     }
-
     .nav-text {
-        display: none; /* Hide text on mobile for a cleaner look */
+        display: none;
     }
 
-    .language-switcher {
-        display: none; /* Hide on mobile to save space */
-    }
-
+    /* Remove padding from main content for mobile view */
     .main-content {
         padding-left: 0;
         padding-bottom: 75px;

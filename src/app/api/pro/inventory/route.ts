@@ -1,6 +1,25 @@
 import { NextResponse } from 'next/server';
-import { firestoreAdmin, authAdmin } from '@/lib/firebase-admin';
+import admin from 'firebase-admin';
 import { FieldValue } from 'firebase-admin/firestore';
+
+// Helper function for Firebase Admin initialization
+function initializeFirebaseAdmin() {
+    if (admin.apps.length === 0) {
+        try {
+            const serviceAccountJson = process.env.FIREBASE_SERVICE_ACCOUNT_JSON;
+            if (!serviceAccountJson) {
+                throw new Error("FIREBASE_SERVICE_ACCOUNT_JSON is not set in environment variables.");
+            }
+            const serviceAccount = JSON.parse(serviceAccountJson);
+            admin.initializeApp({
+                credential: admin.credential.cert(serviceAccount)
+            });
+        } catch (error) {
+            // We don't throw here, to allow the function to return a proper error response
+        }
+    }
+    return admin;
+}
 
 interface InventoryData {
     name: string;
@@ -13,6 +32,9 @@ interface InventoryData {
 // GET handler to fetch the current inventory for a pharmacist
 export async function GET(request: Request) {
     try {
+        initializeFirebaseAdmin();
+        const authAdmin = admin.auth();
+        const firestoreAdmin = admin.firestore();
         const authorization = request.headers.get('Authorization');
         if (!authorization?.startsWith('Bearer ')) {
             return new NextResponse('Unauthorized', { status: 401 });
@@ -49,6 +71,9 @@ export async function GET(request: Request) {
 // DELETE handler to remove a medication from the inventory
 export async function DELETE(request: Request) {
     try {
+        initializeFirebaseAdmin();
+        const authAdmin = admin.auth();
+        const firestoreAdmin = admin.firestore();
         const authorization = request.headers.get('Authorization');
         if (!authorization?.startsWith('Bearer ')) {
             return new NextResponse('Unauthorized', { status: 401 });
@@ -86,6 +111,9 @@ export async function DELETE(request: Request) {
 // POST handler to add or update a medication in the inventory
 export async function POST(request: Request) {
     try {
+        initializeFirebaseAdmin();
+        const authAdmin = admin.auth();
+        const firestoreAdmin = admin.firestore();
         const authorization = request.headers.get('Authorization');
         if (!authorization?.startsWith('Bearer ')) {
             return new NextResponse('Unauthorized', { status: 401 });

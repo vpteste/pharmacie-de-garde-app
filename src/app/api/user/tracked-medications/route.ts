@@ -1,6 +1,25 @@
 import { NextResponse } from 'next/server';
-import { firestoreAdmin, authAdmin } from '@/lib/firebase-admin';
+import admin from 'firebase-admin';
 import { FieldValue } from 'firebase-admin/firestore';
+
+// Helper function for Firebase Admin initialization
+function initializeFirebaseAdmin() {
+    if (admin.apps.length === 0) {
+        try {
+            const serviceAccountJson = process.env.FIREBASE_SERVICE_ACCOUNT_JSON;
+            if (!serviceAccountJson) {
+                throw new Error("FIREBASE_SERVICE_ACCOUNT_JSON is not set in environment variables.");
+            }
+            const serviceAccount = JSON.parse(serviceAccountJson);
+            admin.initializeApp({
+                credential: admin.credential.cert(serviceAccount)
+            });
+        } catch (error) {
+            // We don't throw here, to allow the function to return a proper error response
+        }
+    }
+    return admin;
+}
 
 async function updateUserTrackedMedications(uid: string, medicationId: string, action: 'TRACK' | 'UNTRACK') {
     const userDocRef = firestoreAdmin.collection('users').doc(uid);
@@ -21,6 +40,9 @@ async function updateUserTrackedMedications(uid: string, medicationId: string, a
 
 async function handleRequest(request: Request, action: 'TRACK' | 'UNTRACK') {
     try {
+        initializeFirebaseAdmin();
+        const firestoreAdmin = admin.firestore();
+        const authAdmin = admin.auth();
         const authorization = request.headers.get('Authorization');
         if (!authorization?.startsWith('Bearer ')) {
             return new NextResponse('Unauthorized', { status: 401 });

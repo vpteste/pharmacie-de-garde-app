@@ -1,8 +1,29 @@
 import { NextResponse } from 'next/server';
-import { firestoreAdmin } from '@/lib/firebase-admin';
+import admin from 'firebase-admin';
 import { Timestamp } from 'firebase-admin/firestore';
 
+// Helper function for Firebase Admin initialization
+function initializeFirebaseAdmin() {
+    if (admin.apps.length === 0) {
+        try {
+            const serviceAccountJson = process.env.FIREBASE_SERVICE_ACCOUNT_JSON;
+            if (!serviceAccountJson) {
+                throw new Error("FIREBASE_SERVICE_ACCOUNT_JSON is not set in environment variables.");
+            }
+            const serviceAccount = JSON.parse(serviceAccountJson);
+            admin.initializeApp({
+                credential: admin.credential.cert(serviceAccount)
+            });
+        } catch (error) {
+            // We don't throw here, to allow the function to return a proper error response
+        }
+    }
+    return admin;
+}
+
 export async function GET(request: Request) {
+  initializeFirebaseAdmin();
+  const firestoreAdmin = admin.firestore();
   // 1. Secure the endpoint
   const authHeader = request.headers.get('authorization');
   if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {

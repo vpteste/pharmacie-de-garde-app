@@ -46,6 +46,8 @@
   "nav_pro_area": "Espace Pro",
   "nav_user_area": "Espace Utilisateur",
   "nav_my_account": "Mon Compte",
+  "nav_more": "Plus",
+  "nav_more_options": "Plus d'options",
   "dashboard_title": "Tableau de Bord Professionnel",
   "logout_button": "Déconnexion",
   "user_space_title": "Mon Espace Personnel",
@@ -165,5 +167,7 @@
   "day_sunday": "Dimanche",
   "hours_not_available": "Horaires non disponibles",
   "status_on_duty": "De Garde",
-  "status_hours_unavailable": "Horaires non disponibles"
+  "status_hours_unavailable": "Horaires non disponibles",
+  "directions_button": "Itinéraire",
+  "call_button": "Appeler"
 }

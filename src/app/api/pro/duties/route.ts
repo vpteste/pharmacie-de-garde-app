@@ -1,9 +1,31 @@
 import { NextResponse } from 'next/server';
-import { authAdmin, firestoreAdmin } from '@/lib/firebase-admin';
+import admin from 'firebase-admin';
 import { Timestamp } from 'firebase-admin/firestore';
+
+// Helper function for Firebase Admin initialization
+function initializeFirebaseAdmin() {
+    if (admin.apps.length === 0) {
+        try {
+            const serviceAccountJson = process.env.FIREBASE_SERVICE_ACCOUNT_JSON;
+            if (!serviceAccountJson) {
+                throw new Error("FIREBASE_SERVICE_ACCOUNT_JSON is not set in environment variables.");
+            }
+            const serviceAccount = JSON.parse(serviceAccountJson);
+            admin.initializeApp({
+                credential: admin.credential.cert(serviceAccount)
+            });
+        } catch (error) {
+            // We don't throw here, to allow the function to return a proper error response
+        }
+    }
+    return admin;
+}
 
 // Helper function to authenticate and get pharmacyId
 async function authenticatePharmacist(request: Request): Promise<string> {
+    initializeFirebaseAdmin();
+    const authAdmin = admin.auth();
+    const firestoreAdmin = admin.firestore();
     const authorization = request.headers.get('Authorization');
     if (!authorization?.startsWith('Bearer ')) {
         throw new Error('UNAUTHORIZED');
