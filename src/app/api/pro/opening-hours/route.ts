@@ -13,18 +13,15 @@ function initializeFirebaseAdmin() {
             admin.initializeApp({
                 credential: admin.credential.cert(serviceAccount)
             });
-        } catch (error) {
-            // We don't throw here, to allow the function to return a proper error response
+        } catch {
+            // Initialization error is handled by the caller
         }
     }
     return admin;
 }
 
 // Helper function to authenticate and get pharmacyId
-async function authenticatePharmacist(request: Request): Promise<string> {
-    initializeFirebaseAdmin();
-    const authAdmin = admin.auth();
-    const firestoreAdmin = admin.firestore();
+async function authenticatePharmacist(request: Request, authAdmin: admin.auth.Auth, firestoreAdmin: admin.firestore.Firestore): Promise<string> {
     const authorization = request.headers.get('Authorization');
     if (!authorization?.startsWith('Bearer ')) throw new Error('UNAUTHORIZED');
     
@@ -44,7 +41,10 @@ async function authenticatePharmacist(request: Request): Promise<string> {
 // GET handler to fetch opening hours
 export async function GET(request: Request) {
     try {
-        const pharmacyId = await authenticatePharmacist(request);
+        initializeFirebaseAdmin();
+        const authAdmin = admin.auth();
+        const firestoreAdmin = admin.firestore();
+        const pharmacyId = await authenticatePharmacist(request, authAdmin, firestoreAdmin);
         const pharmacyRef = firestoreAdmin.collection('pharmacies').doc(pharmacyId);
         const docSnap = await pharmacyRef.get();
 
@@ -55,8 +55,12 @@ export async function GET(request: Request) {
         const openingHours = docSnap.data()?.openingHours || {};
         return NextResponse.json({ openingHours });
 
-    } catch {
-        console.error('Error in GET /api/pro/opening-hours');
+    } catch (error) {
+        if (error instanceof Error) {
+            if (error.message.startsWith('UNAUTHORIZED')) return new NextResponse('Unauthorized', { status: 401 });
+            if (error.message.startsWith('FORBIDDEN')) return new NextResponse('Forbidden', { status: 403 });
+        }
+        console.error('Error in GET /api/pro/opening-hours:', error);
         return new NextResponse('Internal Server Error', { status: 500 });
     }
 }
@@ -64,7 +68,10 @@ export async function GET(request: Request) {
 // POST handler to save opening hours
 export async function POST(request: Request) {
     try {
-        const pharmacyId = await authenticatePharmacist(request);
+        initializeFirebaseAdmin();
+        const authAdmin = admin.auth();
+        const firestoreAdmin = admin.firestore();
+        const pharmacyId = await authenticatePharmacist(request, authAdmin, firestoreAdmin);
         const hours = await request.json();
 
         if (!hours || typeof hours !== 'object') {
@@ -76,8 +83,12 @@ export async function POST(request: Request) {
 
         return NextResponse.json({ success: true, message: 'Opening hours updated successfully.' });
 
-    } catch {
-        console.error('Error in POST /api/pro/opening-hours');
+    } catch (error) {
+        if (error instanceof Error) {
+            if (error.message.startsWith('UNAUTHORIZED')) return new NextResponse('Unauthorized', { status: 401 });
+            if (error.message.startsWith('FORBIDDEN')) return new NextResponse('Forbidden', { status: 403 });
+        }
+        console.error('Error in POST /api/pro/opening-hours:', error);
         return new NextResponse('Internal Server Error', { status: 500 });
     }
 }

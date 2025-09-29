@@ -14,8 +14,8 @@ function initializeFirebaseAdmin() {
             admin.initializeApp({
                 credential: admin.credential.cert(serviceAccount)
             });
-        } catch (error) {
-            // We don't throw here, to allow the function to return a proper error response
+        } catch {
+            // Initialization error is handled by the caller
         }
     }
     return admin;
@@ -43,6 +43,7 @@ async function handleRequest(request: Request, action: 'TRACK' | 'UNTRACK') {
         initializeFirebaseAdmin();
         const firestoreAdmin = admin.firestore();
         const authAdmin = admin.auth();
+        
         const authorization = request.headers.get('Authorization');
         if (!authorization?.startsWith('Bearer ')) {
             return new NextResponse('Unauthorized', { status: 401 });
@@ -68,8 +69,11 @@ async function handleRequest(request: Request, action: 'TRACK' | 'UNTRACK') {
 
         return new NextResponse(JSON.stringify({ success: true }), { status: 200 });
 
-    } catch {
-        console.error(`Error in ${action} /api/user/tracked-medications`);
+    } catch (error) {
+        console.error(`Error in ${action} /api/user/tracked-medications:`, error);
+        if (typeof error === 'object' && error !== null && 'code' in error && (error as {code: string}).code === 'auth/id-token-expired') {
+            return new NextResponse('Token expired', { status: 401 });
+        }
         return new NextResponse('Internal Server Error', { status: 500 });
     }
 }

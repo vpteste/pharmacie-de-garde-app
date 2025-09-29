@@ -14,18 +14,15 @@ function initializeFirebaseAdmin() {
             admin.initializeApp({
                 credential: admin.credential.cert(serviceAccount)
             });
-        } catch (error) {
-            // We don't throw here, to allow the function to return a proper error response
+        } catch {
+            // Initialization error is handled by the caller
         }
     }
     return admin;
 }
 
 // Helper function to authenticate and get pharmacyId
-async function authenticatePharmacist(request: Request): Promise<string> {
-    initializeFirebaseAdmin();
-    const authAdmin = admin.auth();
-    const firestoreAdmin = admin.firestore();
+async function authenticatePharmacist(request: Request, authAdmin: admin.auth.Auth, firestoreAdmin: admin.firestore.Firestore): Promise<string> {
     const authorization = request.headers.get('Authorization');
     if (!authorization?.startsWith('Bearer ')) {
         throw new Error('UNAUTHORIZED');
@@ -48,7 +45,11 @@ async function authenticatePharmacist(request: Request): Promise<string> {
 // POST handler for creating a new duty
 export async function POST(request: Request) {
     try {
-        const pharmacyId = await authenticatePharmacist(request);
+        initializeFirebaseAdmin();
+        const authAdmin = admin.auth();
+        const firestoreAdmin = admin.firestore();
+
+        const pharmacyId = await authenticatePharmacist(request, authAdmin, firestoreAdmin);
         const { start, end } = await request.json();
 
         if (!start || !end) {
@@ -65,8 +66,12 @@ export async function POST(request: Request) {
 
         return NextResponse.json({ success: true, id: docRef.id, ...newDuty });
 
-    } catch {
-        console.error('Error in POST /api/pro/duties');
+    } catch (error) {
+        if (error instanceof Error) {
+            if (error.message === 'UNAUTHORIZED') return new NextResponse('Unauthorized', { status: 401 });
+            if (error.message.startsWith('FORBIDDEN')) return new NextResponse('Forbidden', { status: 403 });
+        }
+        console.error('Error in POST /api/pro/duties:', error);
         return new NextResponse('Internal Server Error', { status: 500 });
     }
 }
@@ -74,7 +79,11 @@ export async function POST(request: Request) {
 // DELETE handler for deleting a duty
 export async function DELETE(request: Request) {
     try {
-        const pharmacyId = await authenticatePharmacist(request);
+        initializeFirebaseAdmin();
+        const authAdmin = admin.auth();
+        const firestoreAdmin = admin.firestore();
+
+        const pharmacyId = await authenticatePharmacist(request, authAdmin, firestoreAdmin);
         const { searchParams } = new URL(request.url);
         const dutyId = searchParams.get('dutyId');
 
@@ -93,8 +102,12 @@ export async function DELETE(request: Request) {
 
         return NextResponse.json({ success: true, message: `Duty ${dutyId} deleted.` });
 
-    } catch {
-        console.error('Error in DELETE /api/pro/duties');
+    } catch (error) {
+        if (error instanceof Error) {
+            if (error.message === 'UNAUTHORIZED') return new NextResponse('Unauthorized', { status: 401 });
+            if (error.message.startsWith('FORBIDDEN')) return new NextResponse('Forbidden', { status: 403 });
+        }
+        console.error('Error in DELETE /api/pro/duties:', error);
         return new NextResponse('Internal Server Error', { status: 500 });
     }
 }
