@@ -65,12 +65,8 @@ export async function POST(request: Request) {
 
         return NextResponse.json({ success: true, id: docRef.id, ...newDuty });
 
-    } catch (error: unknown) {
-        if (error instanceof Error) {
-            if (error.message === 'UNAUTHORIZED') return new NextResponse('Unauthorized', { status: 401 });
-            if (error.message.startsWith('FORBIDDEN')) return new NextResponse('Forbidden', { status: 403 });
-        }
-        console.error('Error in POST /api/pro/duties:', error);
+    } catch {
+        console.error('Error in POST /api/pro/duties');
         return new NextResponse('Internal Server Error', { status: 500 });
     }
 }
@@ -97,12 +93,8 @@ export async function DELETE(request: Request) {
 
         return NextResponse.json({ success: true, message: `Duty ${dutyId} deleted.` });
 
-    } catch (error: unknown) {
-        if (error instanceof Error) {
-            if (error.message === 'UNAUTHORIZED') return new NextResponse('Unauthorized', { status: 401 });
-            if (error.message.startsWith('FORBIDDEN')) return new NextResponse('Forbidden', { status: 403 });
-        }
-        console.error('Error in DELETE /api/pro/duties:', error);
+    } catch {
+        console.error('Error in DELETE /api/pro/duties');
         return new NextResponse('Internal Server Error', { status: 500 });
     }
 }

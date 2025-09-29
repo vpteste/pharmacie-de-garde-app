@@ -57,7 +57,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ pharmacies: [] });
     }
 
-    let allPharmacies = pharmaciesSnapshot.docs.map(doc => {
+    const allPharmacies = pharmaciesSnapshot.docs.map(doc => {
       const data = doc.data();
       return {
         id: doc.id,

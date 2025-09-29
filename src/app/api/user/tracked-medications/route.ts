@@ -68,11 +68,8 @@ async function handleRequest(request: Request, action: 'TRACK' | 'UNTRACK') {
 
         return new NextResponse(JSON.stringify({ success: true }), { status: 200 });
 
-    } catch (error: unknown) {
-        console.error(`Error in ${action} /api/user/tracked-medications:`, error);
-        if (typeof error === 'object' && error !== null && 'code' in error && (error as {code: string}).code === 'auth/id-token-expired') {
-            return new NextResponse('Token expired', { status: 401 });
-        }
+    } catch {
+        console.error(`Error in ${action} /api/user/tracked-medications`);
         return new NextResponse('Internal Server Error', { status: 500 });
     }
 }

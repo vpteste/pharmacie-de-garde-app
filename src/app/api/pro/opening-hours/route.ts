@@ -55,12 +55,8 @@ export async function GET(request: Request) {
         const openingHours = docSnap.data()?.openingHours || {};
         return NextResponse.json({ openingHours });
 
-    } catch (error: unknown) {
-        if (error instanceof Error) {
-            if (error.message.startsWith('UNAUTHORIZED')) return new NextResponse('Unauthorized', { status: 401 });
-            if (error.message.startsWith('FORBIDDEN')) return new NextResponse('Forbidden', { status: 403 });
-        }
-        console.error('Error in GET /api/pro/opening-hours:', error);
+    } catch {
+        console.error('Error in GET /api/pro/opening-hours');
         return new NextResponse('Internal Server Error', { status: 500 });
     }
 }
@@ -80,12 +76,8 @@ export async function POST(request: Request) {
 
         return NextResponse.json({ success: true, message: 'Opening hours updated successfully.' });
 
-    } catch (error: unknown) {
-        if (error instanceof Error) {
-            if (error.message.startsWith('UNAUTHORIZED')) return new NextResponse('Unauthorized', { status: 401 });
-            if (error.message.startsWith('FORBIDDEN')) return new NextResponse('Forbidden', { status: 403 });
-        }
-        console.error('Error in POST /api/pro/opening-hours:', error);
+    } catch {
+        console.error('Error in POST /api/pro/opening-hours');
         return new NextResponse('Internal Server Error', { status: 500 });
     }
 }
