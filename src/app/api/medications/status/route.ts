@@ -13,25 +13,25 @@ function initializeFirebaseAdmin() {
             admin.initializeApp({
                 credential: admin.credential.cert(serviceAccount)
             });
-        } catch (error) {
-            // We don't throw here, to allow the function to return a proper error response
+        } catch {
+            // Error during initialization is handled by the caller
         }
     }
     return admin;
 }
 
-async function getTrackedMedications(uid: string): Promise<string[]> {
+async function getTrackedMedications(firestoreAdmin: admin.firestore.Firestore, uid: string): Promise<string[]> {
     try {
         const userDoc = await firestoreAdmin.collection('users').doc(uid).get();
         if (!userDoc.exists) return [];
         return userDoc.data()?.trackedMedications || [];
-    } catch (error) {
-        console.error('Error fetching tracked medications:', error);
+    } catch {
+        console.error('Error fetching tracked medications');
         return [];
     }
 }
 
-async function getMedicationAvailability(medicationIds: string[]) {
+async function getMedicationAvailability(firestoreAdmin: admin.firestore.Firestore, medicationIds: string[]) {
     if (medicationIds.length === 0) return [];
     try {
         const inventorySnapshot = await firestoreAdmin.collectionGroup('inventory')
@@ -49,8 +49,8 @@ async function getMedicationAvailability(medicationIds: string[]) {
 
         return Array.from(availabilityMap.entries()).map(([medicationId, pharmacyCount]) => ({ medicationId, pharmacyCount }));
 
-    } catch (error) {
-        console.error('Error fetching medication availability:', error);
+    } catch {
+        console.error('Error fetching medication availability');
         return [];
     }
 }
@@ -60,6 +60,7 @@ export async function GET(request: Request) {
         initializeFirebaseAdmin();
         const authAdmin = admin.auth();
         const firestoreAdmin = admin.firestore();
+        
         const authorization = request.headers.get('Authorization');
         if (!authorization?.startsWith('Bearer ')) {
             return new NextResponse('Unauthorized', { status: 401 });
@@ -68,13 +69,13 @@ export async function GET(request: Request) {
         const decodedToken = await authAdmin.verifyIdToken(idToken);
         const uid = decodedToken.uid;
 
-        const trackedMedicationIds = await getTrackedMedications(uid);
-        const availability = await getMedicationAvailability(trackedMedicationIds);
+        const trackedMedicationIds = await getTrackedMedications(firestoreAdmin, uid);
+        const availability = await getMedicationAvailability(firestoreAdmin, trackedMedicationIds);
 
         return NextResponse.json({ availability });
 
-    } catch (error) {
-        console.error('Error in GET /api/medications/status:', error);
+    } catch {
+        console.error('Error in GET /api/medications/status');
         return new NextResponse('Internal Server Error', { status: 500 });
     }
 }
