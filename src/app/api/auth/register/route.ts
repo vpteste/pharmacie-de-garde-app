@@ -1,6 +1,34 @@
 import { NextResponse } from 'next/server';
-import { authAdmin, firestoreAdmin } from '@/lib/firebase-admin';
+import admin from 'firebase-admin';
 import { GeoPoint } from 'firebase-admin/firestore';
+
+// Helper function for Firebase Admin initialization
+function initializeFirebaseAdmin() {
+    if (admin.apps.length > 0) {
+        return { 
+            authAdmin: admin.auth(), 
+            firestoreAdmin: admin.firestore() 
+        };
+    }
+    try {
+        const serviceAccountJson = process.env.FIREBASE_SERVICE_ACCOUNT_JSON;
+        if (!serviceAccountJson) {
+            throw new Error("FIREBASE_SERVICE_ACCOUNT_JSON is not set in environment variables.");
+        }
+        const serviceAccount = JSON.parse(serviceAccountJson);
+        admin.initializeApp({
+            credential: admin.credential.cert(serviceAccount)
+        });
+        console.log("Firebase Admin SDK initialized successfully for Register route.");
+        return { 
+            authAdmin: admin.auth(), 
+            firestoreAdmin: admin.firestore() 
+        };
+    } catch (error) {
+        console.error("Firebase Admin SDK initialization failed:", error);
+        throw new Error("Could not initialize Firebase Admin SDK.");
+    }
+}
 
 // Helper function to geocode an address using Google Geocoding API
 async function geocodeAddress(address: string): Promise<GeoPoint | null> {
@@ -30,9 +58,7 @@ async function geocodeAddress(address: string): Promise<GeoPoint | null> {
 
 export async function POST(request: Request) {
   try {
-    if (!authAdmin || !firestoreAdmin) {
-      throw new Error('Firebase Admin SDK is not available.');
-    }
+    const { authAdmin, firestoreAdmin } = initializeFirebaseAdmin();
 
     const body = await request.json();
     const { email, password, role, ...rest } = body;
