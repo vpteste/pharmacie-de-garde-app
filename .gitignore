@@ -43,3 +43,7 @@ next-env.d.ts
 # Fichiers d'environnement locaux
 .env
 .env*.local
+
+# Clés de service et secrets
+# Ne jamais commiter les clés de service !
+serviceAccountKey.json
